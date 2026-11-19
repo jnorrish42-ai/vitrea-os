@@ -1,0 +1,3 @@
+#!/bin/sh
+# Launch the graphical installer as root, keeping the Wayland session environment.
+exec sudo -E QT_QPA_PLATFORM=wayland calamares -D6 "$@"

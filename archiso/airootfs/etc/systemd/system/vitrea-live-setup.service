@@ -1,0 +1,13 @@
+[Unit]
+Description=Vitrea live session setup
+ConditionKernelCommandLine=archisobasedir
+Before=display-manager.service systemd-user-sessions.service
+After=systemd-sysusers.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/vitrea-live-setup
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

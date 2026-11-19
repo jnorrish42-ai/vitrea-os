@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Welcome
+GenericName=Vitrea Welcome
+Comment=Get started with Vitrea OS
+Exec=vitrea-welcome
+Icon=vitrea-logo
+Categories=System;Settings;

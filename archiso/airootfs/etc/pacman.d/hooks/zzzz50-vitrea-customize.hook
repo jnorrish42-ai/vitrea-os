@@ -1,0 +1,11 @@
+# remove from airootfs!
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = *
+
+[Action]
+Description = Applying Vitrea OS customizations...
+When = PostTransaction
+Exec = /usr/local/bin/vitrea-customize

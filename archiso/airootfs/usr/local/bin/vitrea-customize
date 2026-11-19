@@ -1,0 +1,85 @@
+#!/bin/bash
+# Build-time customization for Vitrea OS. Runs once inside the image, then deletes itself.
+[ -e /usr/local/bin/vitrea-customize ] || exit 0
+set -x
+
+# --- identity ---
+cat > /etc/os-release <<'OS'
+NAME="Vitrea OS"
+PRETTY_NAME="Vitrea OS"
+ID=vitrea
+ID_LIKE=arch
+BUILD_ID=rolling
+ANSI_COLOR="38;2;47;124;246"
+HOME_URL="https://archlinux.org/"
+DOCUMENTATION_URL="https://wiki.archlinux.org/"
+SUPPORT_URL="https://bbs.archlinux.org/"
+BUG_REPORT_URL="https://gitlab.archlinux.org/groups/archlinux/-/issues"
+LOGO=vitrea-logo
+OS
+cat > /etc/issue <<'OS'
+Vitrea OS \r (\l)
+
+OS
+
+# --- locale ---
+sed -i 's/^#\(en_US.UTF-8 UTF-8\)/\1/' /etc/locale.gen
+locale-gen
+
+# --- colour schemes: Breeze + Vitrea glass-blue accent ---
+for v in Light Dark; do
+  src=/usr/share/color-schemes/Breeze$v.colors; dst=/usr/share/color-schemes/Vitrea$v.colors
+  [ -f "$src" ] || continue
+  sed -e "s/^Name=.*/Name=Vitrea $v/" -e 's/61,174,233/47,124,246/g' \
+      -e 's/^DecorationFocus=.*/DecorationFocus=47,124,246/' -e 's/^DecorationHover=.*/DecorationHover=47,124,246/' "$src" > "$dst"
+  if [ $v = Light ]; then
+    sed -i -e '/^\[WM\]/,/^\[/ s/^activeBackground=.*/activeBackground=236,239,247/' \
+           -e '/^\[WM\]/,/^\[/ s/^inactiveBackground=.*/inactiveBackground=240,242,248/' \
+           -e '/^\[WM\]/,/^\[/ s/^activeForeground=.*/activeForeground=20,24,42/' "$dst"
+    sed -i -e '/^\[WM\]/,/^\[/ s/^activeBackground=.*/activeBackground=236,239,247,165/' \
+           -e '/^\[WM\]/,/^\[/ s/^inactiveBackground=.*/inactiveBackground=240,242,248,140/' "$dst"
+  else
+    sed -i -e '/^\[WM\]/,/^\[/ s/^activeBackground=.*/activeBackground=32,36,52/' \
+           -e '/^\[WM\]/,/^\[/ s/^inactiveBackground=.*/inactiveBackground=28,31,44/' "$dst"
+    sed -i -e '/^\[WM\]/,/^\[/ s/^activeBackground=.*/activeBackground=32,36,52,175/' \
+           -e '/^\[WM\]/,/^\[/ s/^inactiveBackground=.*/inactiveBackground=28,31,44,150/' "$dst"
+  fi
+done
+
+# --- Liquid glass: rewrite Breeze's translucent frames in place (pacman hook keeps it after updates) ---
+python3 /usr/lib/vitrea/make-glass-theme.py
+printf '[Theme]\nname=default\n' > /etc/xdg/plasmarc
+
+# --- 43PR: white Papirus folders (as its installer does) ---
+command -v papirus-folders >/dev/null && papirus-folders -C white --theme Papirus-Dark || true
+command -v papirus-folders >/dev/null && papirus-folders -C white --theme Papirus || true
+
+# --- 43PR: pre-generate colour files (gtk/kitty/rofi/hypr) from the default wallpaper, like its install.sh ---
+if [ -f /etc/skel/.config/43pr/bin/theme.py ] && command -v matugen >/dev/null; then
+  HOME=/etc/skel XDG_STATE_HOME=/etc/skel/.local/state XDG_CACHE_HOME=/etc/skel/.cache \
+    python3 /etc/skel/.config/43pr/bin/theme.py wallpaper /etc/skel/Pictures/Wallpapers/wallhaven-k8jvm7.jpg || true
+  # each user re-runs it on first Hyprland login with their own paths
+  rm -f /etc/skel/.local/state/43pr/state.json
+fi
+
+# --- only our Hyprland session in the login menu (43PR flavour) ---
+rm -f /usr/share/wayland-sessions/hyprland.desktop /usr/share/wayland-sessions/hyprland-uwsm.desktop
+
+# --- new users get zsh (43PR uses zsh + starship) ---
+sed -i 's|^SHELL=.*|SHELL=/usr/bin/zsh|' /etc/default/useradd
+
+# --- services ---
+systemctl enable sddm NetworkManager bluetooth cups power-profiles-daemon vitrea-flathub.service vitrea-live-setup.service
+systemctl enable fstrim.timer paccache.timer 2>/dev/null || true
+
+# --- notifications top-right (macOS-like) ---
+grep -q '^PopupPosition' /etc/xdg/plasmanotifyrc 2>/dev/null || printf '\n[Notifications]\nPopupPosition=TopRight\n' >> /etc/xdg/plasmanotifyrc
+# --- sddm owns its state dir (we pre-seeded Plasma as the default session) ---
+chown -R sddm:sddm /var/lib/sddm 2>/dev/null || true
+
+# --- fonts cache, icon caches ---
+fc-cache -f >/dev/null 2>&1 || true
+gtk-update-icon-cache -q -t -f /usr/share/icons/hicolor 2>/dev/null || true
+
+# --- clean up after ourselves ---
+rm -f /usr/local/bin/vitrea-customize

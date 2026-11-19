@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <!-- Vitrea OS logo: a glass droplet holding a "V" prism. Original artwork. -->
+  <defs>
+    <linearGradient id="body" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7fb6ff"/>
+      <stop offset="0.55" stop-color="#3d7bf5"/>
+      <stop offset="1" stop-color="#8e5cf7"/>
+    </linearGradient>
+    <linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.85"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="v" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#e3ecff"/>
+    </linearGradient>
+  </defs>
+  <rect x="32" y="32" width="448" height="448" rx="112" fill="url(#body)"/>
+  <rect x="33" y="33" width="446" height="446" rx="111" fill="none" stroke="#ffffff" stroke-opacity="0.55" stroke-width="3"/>
+  <path d="M80 150 C 80 92, 120 64, 176 64 L 336 64 C 392 64, 432 92, 432 150 C 340 120, 180 120, 80 150 Z" fill="url(#gloss)"/>
+  <path d="M150 160 L 222 160 L 256 290 L 290 160 L 362 160 L 290 372 L 222 372 Z" fill="url(#v)"/>
+  <path d="M256 290 L 290 160 L 362 160 L 290 372 Z" fill="#ffffff" fill-opacity="0.35"/>
+</svg>

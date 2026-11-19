@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Toggle Light/Dark Mode
+Comment=Switch Vitrea between light and dark glass
+Exec=vitrea-appearance toggle
+Icon=preferences-desktop-theme-global
+Categories=Settings;DesktopSettings;

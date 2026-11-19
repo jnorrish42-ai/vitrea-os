@@ -1,0 +1,16 @@
+pkgname=mpvpaper
+pkgver=1.9
+pkgrel=1
+pkgdesc="Video wallpaper program for wlroots-based Wayland compositors"
+arch=(x86_64)
+url="https://github.com/GhostNaN/mpvpaper"
+license=(GPL-3.0-only)
+depends=(mpv wayland libglvnd)
+makedepends=(meson ninja wayland-protocols git)
+source=("mpvpaper::git+https://github.com/GhostNaN/mpvpaper.git#tag=$pkgver")
+sha256sums=(SKIP)
+build() { arch-meson mpvpaper build; meson compile -C build; }
+package() {
+  meson install -C build --destdir "$pkgdir"
+  install -Dm644 mpvpaper/mpvpaper.man "$pkgdir/usr/share/man/man1/mpvpaper.1"
+}

@@ -1,0 +1,8 @@
+{
+    "KPlugin": {
+        "Authors": [{ "Name": "Vitrea OS" }],
+        "Id": "VitreaLiquid",
+        "License": "CC-BY-SA-4.0",
+        "Name": "Vitrea Liquid"
+    }
+}

@@ -1,0 +1,17 @@
+#!/bin/bash
+# Creates the passwordless "live" user and enables auto-login. Only runs on the live ISO;
+# nothing here lands in the squashfs, so installed systems stay clean.
+grep -q archisobasedir /proc/cmdline || exit 0
+id live >/dev/null 2>&1 || useradd -m -G wheel,audio,video,network,storage,lp -s /usr/bin/zsh -c "Vitrea Live" live
+passwd -d live >/dev/null
+echo 'live ALL=(ALL:ALL) NOPASSWD: ALL' > /etc/sudoers.d/99-live && chmod 440 /etc/sudoers.d/99-live
+mkdir -p /etc/sddm.conf.d
+printf '[Autologin]\nUser=live\nSession=plasma\nRelogin=false\n' > /etc/sddm.conf.d/50-live-autologin.conf
+# Live session: don't lock or turn off the screen while someone is trying/installing
+install -d -o live -g live /home/live/.config
+printf '[Daemon]\nAutolock=false\nLockOnResume=false\n' > /home/live/.config/kscreenlockerrc
+printf '[AC][Display]\nDimDisplayWhenIdle=false\nTurnOffDisplayWhenIdle=false\n\n[AC][SuspendAndShutdown]\nAutoSuspendAction=0\n\n[Battery][SuspendAndShutdown]\nAutoSuspendAction=0\n' > /home/live/.config/powerdevilrc
+chown live:live /home/live/.config/kscreenlockerrc /home/live/.config/powerdevilrc
+# Put the installer on the live desktop
+install -d -o live -g live /home/live/Desktop
+install -m 755 -o live -g live /usr/share/applications/vitrea-install.desktop /home/live/Desktop/

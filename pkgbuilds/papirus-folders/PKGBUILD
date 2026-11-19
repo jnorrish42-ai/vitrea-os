@@ -1,0 +1,17 @@
+pkgname=papirus-folders
+pkgver=1.14.0
+pkgrel=1
+pkgdesc="Change the folder color of the Papirus icon theme"
+arch=(any)
+url="https://github.com/PapirusDevelopmentTeam/papirus-folders"
+license=(MIT)
+depends=(bash papirus-icon-theme)
+makedepends=(git)
+source=("papirus-folders::git+https://github.com/PapirusDevelopmentTeam/papirus-folders.git#tag=v$pkgver")
+sha256sums=(SKIP)
+package() {
+  cd papirus-folders
+  install -Dm755 papirus-folders "$pkgdir/usr/bin/papirus-folders"
+  [ -f completion/papirus-folders ] && install -Dm644 completion/papirus-folders "$pkgdir/usr/share/bash-completion/completions/papirus-folders" || true
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

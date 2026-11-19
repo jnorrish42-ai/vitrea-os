@@ -1,0 +1,13 @@
+pkgname=ttf-tabler-icons
+pkgver=3.52.0
+pkgrel=1
+pkgdesc="Tabler icon webfont"
+arch=(any)
+url="https://tabler.io/icons"
+license=(MIT)
+source=("https://registry.npmjs.org/@tabler/icons-webfont/-/icons-webfont-$pkgver.tgz")
+noextract=()
+sha256sums=(SKIP)
+package() {
+  install -Dm644 -t "$pkgdir/usr/share/fonts/TTF" package/dist/fonts/*.ttf
+}

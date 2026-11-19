@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Hyprland (43PR)
+Comment=Tiling desktop by 43PR: Hyprland + Quickshell, keyboard-driven
+Exec=/usr/bin/43pr-hyprland-session
+Type=Application
+DesktopNames=Hyprland
+Keywords=tiling;wayland;compositor;43pr;

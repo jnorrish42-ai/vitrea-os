@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Vitrea Welcome
+Exec=vitrea-welcome --autostart
+Icon=vitrea-logo
+X-KDE-autostart-phase=2
+NoDisplay=true
+OnlyShowIn=KDE;

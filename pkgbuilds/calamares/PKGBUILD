@@ -1,0 +1,27 @@
+# Vitrea OS: Calamares installer (Qt6) built from upstream v3.3.14
+pkgname=calamares
+pkgver=3.3.14
+pkgrel=1
+pkgdesc="Distribution-independent installer framework"
+arch=(x86_64)
+url="https://calamares.io"
+license=(GPL-3.0-or-later)
+depends=(kconfig kcoreaddons ki18n kcrash kpmcore libpwquality yaml-cpp qt6-base qt6-declarative qt6-svg
+         python icu polkit squashfs-tools rsync dosfstools e2fsprogs btrfs-progs ntfs-3g os-prober
+         grub efibootmgr gptfdisk hwinfo)
+makedepends=(cmake ninja extra-cmake-modules qt6-tools git)
+source=("calamares::git+https://github.com/calamares/calamares.git#tag=v$pkgver")
+sha256sums=(SKIP)
+
+build() {
+  cmake -S calamares -B build -G Ninja \
+    -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib \
+    -DWITH_QT6=ON -DWITH_PYBIND11=ON -DBUILD_TESTING=OFF -DBUILD_SCHEMA_TESTING=OFF \
+    -DINSTALL_CONFIG=OFF -DINSTALL_POLKIT=ON \
+    -DSKIP_MODULES="dracut dracutlukscfg dummycpp dummyprocess dummypython dummypythonqt initramfs initramfscfg interactiveterminal mkinitfs openrcdmcryptcfg services-openrc zfs zfshostid plymouthcfg tracking webview plasmalnf license oemid"
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

@@ -1,0 +1,19 @@
+#!/bin/bash
+# Runs inside the freshly installed system: strip everything that only belongs on the live ISO.
+cd /etc/systemd/system
+rm -f choose-mirror.service pacman-init.service etc-pacman.d-gnupg.mount livecd-alsa-unmuter.service vitrea-live-setup.service
+find /etc/systemd/system -name 'choose-mirror.service' -o -name 'pacman-init.service' -o -name 'etc-pacman.d-gnupg.mount' \
+     -o -name 'livecd-alsa-unmuter.service' -o -name 'vitrea-live-setup.service' | xargs -r rm -f
+rm -f /etc/systemd/journald.conf.d/volatile-storage.conf /etc/systemd/logind.conf.d/do-not-suspend.conf \
+      /etc/systemd/resolved.conf.d/archiso.conf /etc/mkinitcpio.conf.d/archiso.conf
+rm -f /usr/local/bin/choose-mirror /usr/local/bin/livecd-sound /usr/local/bin/vitrea-live-setup
+rm -rf /usr/local/share/livecd-sound
+rm -f /usr/share/applications/vitrea-install.desktop /usr/bin/vitrea-install
+passwd -l root >/dev/null 2>&1 || true
+# Real (persistent) pacman keyring for the installed system
+rm -rf /etc/pacman.d/gnupg
+pacman-key --init && pacman-key --populate archlinux
+# Installer + live tooling are not needed anymore
+pacman -Rdd --noconfirm calamares mkinitcpio-archiso >/dev/null 2>&1 || true
+rm -rf /etc/calamares
+exit 0

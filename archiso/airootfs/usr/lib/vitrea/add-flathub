@@ -1,0 +1,4 @@
+#!/bin/sh
+# Add the Flathub app store once the machine is online (retried by systemd until it works).
+flatpak remotes --system | grep -q '^flathub' && exit 0
+exec flatpak remote-add --system --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo

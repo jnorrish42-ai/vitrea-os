@@ -1,0 +1,28 @@
+---
+componentName: vitrea
+windowExpanding: normal
+windowSize: 1100px,720px
+windowPlacement: center
+sidebar: widget
+navigation: widget
+strings:
+    productName:         Vitrea OS
+    shortProductName:    Vitrea
+    version:             1.0
+    shortVersion:        1.0
+    versionedName:       Vitrea OS
+    shortVersionedName:  Vitrea
+    bootloaderEntryName: Vitrea OS
+    productUrl:          https://archlinux.org/
+    supportUrl:          https://wiki.archlinux.org/
+images:
+    productLogo:         "logo.png"
+    productIcon:         "icon.png"
+    productWelcome:      "welcome.png"
+slideshow:               "show.qml"
+slideshowAPI:            2
+style:
+   SidebarBackground:        "#eef2fb"
+   SidebarText:              "#14182a"
+   SidebarTextCurrent:       "#2f7cf6"
+   SidebarBackgroundCurrent: "#dbe6fd"

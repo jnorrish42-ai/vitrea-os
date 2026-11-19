@@ -1,0 +1,18 @@
+#!/bin/bash
+# Start the 43PR Hyprland desktop. On a user's first start, generate the colour theme
+# from the default wallpaper (what 43PR's install.sh does), then launch Hyprland.
+state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/43pr"
+if [ ! -e "$state_dir/.vitrea-initialized" ]; then
+    mkdir -p "$state_dir" "$HOME/Pictures/Wallpapers"
+    wp="$HOME/Pictures/Wallpapers/wallhaven-k8jvm7.jpg"
+    [ -f "$wp" ] || cp /etc/skel/Pictures/Wallpapers/wallhaven-k8jvm7.jpg "$wp" 2>/dev/null
+    # Users created before the dotfiles existed: seed missing configs from /etc/skel
+    cp -rn /etc/skel/.config/. "$HOME/.config/" 2>/dev/null
+    [ -f "$HOME/.zshrc" ] || cp /etc/skel/.zshrc "$HOME/.zshrc"
+    if [ -f "$HOME/.config/43pr/bin/theme.py" ]; then
+        python3 "$HOME/.config/43pr/bin/theme.py" wallpaper "$wp" >/dev/null 2>&1 || true
+        python3 "$HOME/.config/43pr/bin/theme.py" apply >/dev/null 2>&1 || true
+    fi
+    touch "$state_dir/.vitrea-initialized"
+fi
+exec /usr/bin/start-hyprland

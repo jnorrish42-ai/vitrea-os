@@ -1,0 +1,10 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Path
+Target = usr/share/plasma/desktoptheme/default/*
+
+[Action]
+Description = Applying Vitrea liquid glass to the Plasma theme...
+When = PostTransaction
+Exec = /usr/bin/python3 /usr/lib/vitrea/make-glass-theme.py
