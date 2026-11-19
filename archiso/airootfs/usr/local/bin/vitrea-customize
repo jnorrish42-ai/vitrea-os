@@ -71,6 +71,8 @@ sed -i 's|^SHELL=.*|SHELL=/usr/bin/zsh|' /etc/default/useradd
 # --- services ---
 systemctl enable sddm NetworkManager bluetooth cups power-profiles-daemon vitrea-flathub.service vitrea-live-setup.service
 systemctl enable fstrim.timer paccache.timer 2>/dev/null || true
+# NetworkManager handles "network online"; networkd's waiter would just time out
+systemctl mask systemd-networkd-wait-online.service
 
 # --- notifications top-right (macOS-like) ---
 grep -q '^PopupPosition' /etc/xdg/plasmanotifyrc 2>/dev/null || printf '\n[Notifications]\nPopupPosition=TopRight\n' >> /etc/xdg/plasmanotifyrc

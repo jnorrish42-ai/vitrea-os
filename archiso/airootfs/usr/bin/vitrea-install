@@ -1,3 +1,5 @@
 #!/bin/sh
-# Launch the graphical installer as root, keeping the Wayland session environment.
-exec sudo -E QT_QPA_PLATFORM=wayland calamares -D6 "$@"
+# Launch the graphical installer as root, keeping the desktop session's environment.
+# QT_QUICK_BACKEND=software: Calamares embeds a QML slideshow; if OpenGL isn't usable for
+# root (common in VMs) Qt would otherwise draw an empty window.
+exec sudo -E LANG="${LANG:-en_US.UTF-8}" QT_QUICK_BACKEND=software calamares -D6 "$@"
