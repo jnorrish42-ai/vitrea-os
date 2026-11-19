@@ -20,7 +20,7 @@ SLIDES = [
     ("03-safe.png", "Always fresh",
      ["Built on Arch Linux: the newest apps and drivers,", "updated with one click in Discover."]),
     ("04-yours.png", "Two desktops, your choice",
-     ["Vitrea Glass for everyday ease, or 43PR's Hyprland", "for keyboard lovers. Pick one at the login screen."]),
+     ["Riced Plasma for everyday ease, or 43PR's Hyprland", "for keyboard lovers. Pick one at the login screen."]),
 ]
 
 bg = Image.open(wall).convert("RGB").resize((W, H), Image.LANCZOS)
@@ -30,12 +30,12 @@ def glass_card(img, box, radius=60):
     x0, y0, x1, y1 = box
     region = img.crop(box).filter(ImageFilter.GaussianBlur(40))
     white = Image.new("RGB", region.size, (255, 255, 255))
-    region = Image.blend(region, white, 0.45)
+    region = Image.blend(region, Image.new("RGB", region.size, (24, 24, 37)), 0.72)
     mask = Image.new("L", region.size, 0)
     ImageDraw.Draw(mask).rounded_rectangle((0, 0, x1 - x0 - 1, y1 - y0 - 1), radius, fill=255)
     img.paste(region, (x0, y0), mask)
     d = ImageDraw.Draw(img, "RGBA")
-    d.rounded_rectangle(box, radius, outline=(255, 255, 255, 200), width=3)
+    d.rounded_rectangle(box, radius, outline=(69, 71, 90, 255), width=3)
 
 for fname, title, lines in SLIDES:
     img = bg.copy()
@@ -45,9 +45,9 @@ for fname, title, lines in SLIDES:
     img.paste(lg, (box[0] + 110, (H - 200) // 2 - 10), lg)
     d = ImageDraw.Draw(img)
     tx = box[0] + 400
-    d.text((tx, 450), title, font=font("SemiBold", 76), fill=(20, 24, 42))
+    d.text((tx, 450), title, font=font("SemiBold", 76), fill=(205, 214, 244))
     for i, ln in enumerate(lines):
-        d.text((tx, 590 + i * 70), ln, font=font("Regular", 48), fill=(60, 68, 96))
+        d.text((tx, 590 + i * 70), ln, font=font("Regular", 48), fill=(166, 173, 200))
     img.save(os.path.join(out, fname), optimize=True)
 
 # Calamares images: logo (sidebar), icon, welcome banner
@@ -57,7 +57,7 @@ ban = bg.resize((800, 450), Image.LANCZOS).crop((0, 75, 800, 375))
 glass_card(ban, (40, 40, 760, 260), 36)
 lg = logo.resize((120, 120), Image.LANCZOS)
 ban.paste(lg, (80, 90), lg)
-ImageDraw.Draw(ban).text((230, 108), "Vitrea OS", font=font("SemiBold", 64), fill=(20, 24, 42))
-ImageDraw.Draw(ban).text((232, 186), "Simple. Beautiful. Yours.", font=font("Regular", 28), fill=(60, 68, 96))
+ImageDraw.Draw(ban).text((230, 108), "Vitrea OS", font=font("SemiBold", 64), fill=(205, 214, 244))
+ImageDraw.Draw(ban).text((232, 186), "Simple. Beautiful. Yours.", font=font("Regular", 28), fill=(166, 173, 200))
 ban.save(os.path.join(out, "welcome.png"))
 print("ok")

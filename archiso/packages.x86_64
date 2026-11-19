@@ -109,6 +109,9 @@ discover
 packagekit-qt6
 flatpak
 kvantum
+aurorae
+plymouth
+plymouth-kcm
 konsole
 dolphin
 kate

@@ -10,7 +10,7 @@ printf '[Autologin]\nUser=live\nSession=plasma\nRelogin=false\n' > /etc/sddm.con
 # Live session: don't lock or turn off the screen while someone is trying/installing
 install -d -o live -g live /home/live/.config
 printf '[Daemon]\nAutolock=false\nLockOnResume=false\n' > /home/live/.config/kscreenlockerrc
-printf '[AC][Display]\nDimDisplayWhenIdle=false\nTurnOffDisplayWhenIdle=false\n\n[AC][SuspendAndShutdown]\nAutoSuspendAction=0\n\n[Battery][SuspendAndShutdown]\nAutoSuspendAction=0\n' > /home/live/.config/powerdevilrc
+printf '[AC][Display]\nDimDisplayWhenIdle=false\nTurnOffDisplayWhenIdle=false\nTurnOffDisplayIdleTimeoutSec=-1\n\n[AC][SuspendAndShutdown]\nAutoSuspendAction=0\n\n[Battery][SuspendAndShutdown]\nAutoSuspendAction=0\n' > /home/live/.config/powerdevilrc
 chown live:live /home/live/.config/kscreenlockerrc /home/live/.config/powerdevilrc
 # Put the installer on the live desktop
 install -d -o live -g live /home/live/Desktop

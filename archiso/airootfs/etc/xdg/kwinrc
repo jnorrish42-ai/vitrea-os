@@ -1,21 +1,25 @@
 [org.kde.kdecoration2]
-library=org.kde.breeze
-theme=Breeze
-ButtonsOnLeft=XIA
-ButtonsOnRight=
+library=org.kde.kwin.aurorae
+theme=__aurorae__svg__VitreaNight
+ButtonsOnLeft=
+ButtonsOnRight=IAX
 BorderSize=None
 BorderSizeAuto=false
+
+[Desktops]
+Number=4
+Rows=1
 
 [Plugins]
 blurEnabled=true
 contrastEnabled=true
-magiclampEnabled=true
-squashEnabled=false
+magiclampEnabled=false
 scaleEnabled=true
 overviewEnabled=true
+slideEnabled=true
 
 [Effect-blur]
-BlurStrength=3
+BlurStrength=6
 NoiseStrength=0
 
 [Effect-overview]

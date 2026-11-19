@@ -32,7 +32,7 @@ class Backend(QObject):
         try:
             out = subprocess.run(["kreadconfig6", "--group", "General", "--key", "ColorScheme"],
                                  capture_output=True, text=True).stdout
-            return "Dark" in out
+            return "Dark" in out or "Night" in out
         except OSError:
             return False
 

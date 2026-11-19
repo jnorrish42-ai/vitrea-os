@@ -1,12 +1,16 @@
 {
     "KPackageStructure": "Plasma/LookAndFeel",
     "KPlugin": {
-        "Authors": [{ "Name": "Vitrea OS" }],
+        "Authors": [
+            {
+                "Name": "Vitrea OS"
+            }
+        ],
         "Category": "",
-        "Description": "Frosted glass desktop with a top menu bar and a floating dock",
+        "Description": "Dark riced desktop: slim top bar with workspaces and a floating dock",
         "Id": "org.vitrea.glass.desktop",
         "License": "GPL-2.0+",
-        "Name": "Vitrea Glass",
+        "Name": "Vitrea Night",
         "Version": "1.0"
     },
     "X-Plasma-APIVersion": "2"

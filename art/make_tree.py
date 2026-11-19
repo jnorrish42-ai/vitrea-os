@@ -146,7 +146,7 @@ def draw_tree(base, rng, x0, y0, scale, pal, light_dir, glow_amt):
     # drifting petals to the lee side
     drift = Image.new('RGBA', base.size, (0, 0, 0, 0))
     dd = ImageDraw.Draw(drift)
-    for _ in range(140):
+    for _ in range(DRIFT_N):
         px = rng.uniform(xmin, xmax + 900 * scale * light_dir) if light_dir > 0 else rng.uniform(xmin - 900 * scale, xmax)
         py = rng.uniform(min(t[1] for t in tips), HORIZON - 20)
         rr = rng.uniform(3, 9) * scale
@@ -225,7 +225,12 @@ def bokeh(img, rng, n, cols, rmin, rmax, alpha, ymax):
     return Image.alpha_composite(img.convert('RGBA'), layer.filter(ImageFilter.GaussianBlur(rmin * 0.6)))
 
 
+DRIFT_N = 140
+
+
 def scene(dark):
+    global DRIFT_N
+    DRIFT_N = 60 if dark else 140
     rng = np.random.default_rng(21 if dark else 7)
     if not dark:
         sky = vgrad([(0, '#4d7be0'), (0.30, '#8fa8f2'), (0.52, '#d6c3f2'), (0.63, '#ffd3c4'), (0.665, '#ffe6cf'), (1, '#ffe6cf')], H, W)
@@ -238,36 +243,36 @@ def scene(dark):
         hill_cols = [('#9b8fd6', 150), ('#7f72c4', 190), ('#6a5fae', 220)]
         island_col, island_rim, lake_tint, glow_amt, light_dir = hexrgb('#4a3554'), hexrgb('#ffcfae'), (120, 130, 200), 0.85, 1
     else:
-        sky = vgrad([(0, '#050816'), (0.35, '#101a44'), (0.55, '#2a1f5e'), (0.665, '#4b2c74'), (1, '#4b2c74')], H, W)
+        sky = vgrad([(0, '#0b0b12'), (0.35, '#11111b'), (0.55, '#1b1a2c'), (0.665, '#2b2440'), (1, '#2b2440')], H, W)
         moon = (int(W * 0.74), int(H * 0.22))
-        sky += radial(*moon, 700, H, W)[..., None] * np.array([40, 50, 90], np.float32)
-        sky += radial(*moon, 150, H, W)[..., None] * np.array([60, 70, 100], np.float32)
+        sky += radial(*moon, 520, H, W)[..., None] * np.array([22, 24, 40], np.float32)
+        sky += radial(*moon, 110, H, W)[..., None] * np.array([40, 42, 60], np.float32)
         pal = dict(wood=hexrgb('#140f22'), rim=hexrgb('#9fb6ff'),
-                   petals=[hexrgb(c) for c in ('#ff8fd0', '#d77bff', '#ff6fb5', '#b98cff', '#ffa6e0', '#e3a0ff')],
-                   petal_hi=hexrgb('#e8f0ff'), glow=hexrgb('#d68bff'))
-        hill_cols = [('#2c2a6e', 170), ('#221f55', 210), ('#1a1742', 235)]
-        island_col, island_rim, lake_tint, glow_amt, light_dir = hexrgb('#120d22'), hexrgb('#a9b8ff'), (20, 22, 60), 1.0, 1
+                   petals=[hexrgb(c) for c in ('#cba6f7', '#f5c2e7', '#b4befe', '#f2cdcd', '#eba0ac', '#cba6f7')],
+                   petal_hi=hexrgb('#f5e0dc'), glow=hexrgb('#a77fe0'))
+        hill_cols = [('#25223a', 190), ('#1b1a2c', 220), ('#141320', 240)]
+        island_col, island_rim, lake_tint, glow_amt, light_dir = hexrgb('#0d0c16'), hexrgb('#b4befe'), (14, 14, 24), 0.75, 1
     img = to_img(sky).convert('RGBA')
     if dark:
         st = Image.new('RGBA', img.size, (0, 0, 0, 0)); ds = ImageDraw.Draw(st)
-        for _ in range(1600):
+        for _ in range(1100):
             x, y = rng.uniform(0, W), rng.uniform(0, HORIZON * 0.85)
             r = rng.choice([0.8, 1.0, 1.3, 1.8, 2.6], p=[0.4, 0.3, 0.17, 0.1, 0.03])
             ds.ellipse([x - r, y - r, x + r, y + r], fill=(255, 255, 255, int(rng.uniform(80, 255))))
         img = Image.alpha_composite(img, st)
         m = Image.new('RGBA', img.size, (0, 0, 0, 0)); dm = ImageDraw.Draw(m)
         mx, my = int(W * 0.74), int(H * 0.22)
-        dm.ellipse([mx - 78, my - 78, mx + 78, my + 78], fill=(246, 244, 255, 255))
+        dm.ellipse([mx - 54, my - 54, mx + 54, my + 54], fill=(240, 236, 250, 255))
         img = Image.alpha_composite(img, m.filter(ImageFilter.GaussianBlur(1.5)))
     for i, (c, a) in enumerate(hill_cols):
         img = Image.alpha_composite(img, hills(rng, HORIZON + 4, 120 + 70 * i, hexrgb(c), a, i * 1.7).filter(ImageFilter.GaussianBlur(4 - i)))
-    img = bokeh(img, rng, 70, pal['petals'], 18, 60, 60 if not dark else 80, HORIZON)
+    img = bokeh(img, rng, 70 if not dark else 40, pal['petals'], 18, 60, 60 if not dark else 38, HORIZON)
     x_peak = int(W * 0.36)
     img = island(img, x_peak, island_col, island_rim, light_dir)
     img = draw_tree(img, rng, x_peak, HORIZON - 104, 0.95, pal, light_dir, glow_amt)
     img = reflect(img.convert('RGB'), lake_tint, 0.30 if not dark else 0.40)
     if dark:
-        img = bokeh(img, rng, 120, [hexrgb('#ffe9a8'), hexrgb('#c8ffda')], 3, 7, 230, H)  # fireflies
+        img = bokeh(img, rng, 60, [hexrgb('#f9e2af'), hexrgb('#a6e3a1')], 2, 5, 170, H)  # fireflies
     return finish(img, rng, 0.28 if not dark else 0.42)
 
 

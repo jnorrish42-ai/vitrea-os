@@ -9,14 +9,14 @@ Usage: make-glass-theme.py [THEME_DIR]   (default: /usr/share/plasma/desktopthem
 import gzip, os, re, sys
 
 THEME = sys.argv[1] if len(sys.argv) > 1 else '/usr/share/plasma/desktoptheme/default'
-MARK = 'vitrea-glass-defs'
+MARK = 'vitrea-glass-defs-night'
 
 # tint = Breeze background colour opacity; gloss = white sheen top->bottom; rim = specular edge
 STYLES = {
-    'translucent/widgets/panel-background.svgz': dict(tint=0.16, gloss=(0.22, 0.04), rim=(0.95, 0.55, 0.30)),
-    'translucent/dialogs/background.svgz':       dict(tint=0.50, gloss=(0.16, 0.03), rim=(0.90, 0.45, 0.25)),
-    'translucent/widgets/tooltip.svgz':          dict(tint=0.55, gloss=(0.16, 0.03), rim=(0.90, 0.45, 0.25)),
-    'translucent/widgets/background.svgz':       dict(tint=0.35, gloss=(0.18, 0.03), rim=(0.90, 0.45, 0.25)),
+    'translucent/widgets/panel-background.svgz': dict(tint=0.80, gloss=(0.03, 0.0), rim=(0.14, 0.07, 0.05)),
+    'translucent/dialogs/background.svgz':       dict(tint=0.90, gloss=(0.02, 0.0), rim=(0.12, 0.06, 0.04)),
+    'translucent/widgets/tooltip.svgz':          dict(tint=0.94, gloss=(0.02, 0.0), rim=(0.12, 0.06, 0.04)),
+    'translucent/widgets/background.svgz':       dict(tint=0.85, gloss=(0.02, 0.0), rim=(0.12, 0.06, 0.04)),
 }
 BG = 'class="ColorScheme-Background"'
 
@@ -42,7 +42,7 @@ def groups(st):
         'bottomleft': body(bl) + white(bl, g_bot) + arc('M 0.5,0 C 0.5,3.4 2.6,5.5 6,5.5', r_bot),
         'bottomright': body(br) + white(br, g_bot) + arc('M 0,5.5 C 3.4,5.5 5.5,3.4 5.5,0', r_bot),
     }, (
-        '<defs id="vitrea-glass-defs">'
+        '<defs id="vitrea-glass-defs-night">'
         f'<linearGradient id="vg-gloss" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:#ffffff;stop-opacity:{g_top}"/>'
         f'<stop offset="1" style="stop-color:#ffffff;stop-opacity:{g_bot}"/></linearGradient>'
         f'<linearGradient id="vg-rim" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:#ffffff;stop-opacity:{r_side}"/>'

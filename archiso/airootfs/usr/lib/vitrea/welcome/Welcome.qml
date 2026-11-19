@@ -14,11 +14,11 @@ ApplicationWindow {
     title: "Welcome to Vitrea OS"
 
     readonly property bool dark: backend.darkMode
-    readonly property color ink: dark ? "#f2f5ff" : "#14182a"
-    readonly property color subInk: dark ? "#b9c2dd" : "#4a5370"
-    readonly property color glass: dark ? "#33182040" : "#99ffffff"
-    readonly property color glassHover: dark ? "#55304070" : "#ccffffff"
-    readonly property color accent: "#2f7cf6"
+    readonly property color ink: dark ? "#cdd6f4" : "#14182a"
+    readonly property color subInk: dark ? "#a6adc8" : "#4a5370"
+    readonly property color glass: dark ? "#313244" : "#99ffffff"
+    readonly property color glassHover: dark ? "#45475a" : "#ccffffff"
+    readonly property color accent: dark ? "#cba6f7" : "#2f7cf6"
 
     // Liquid background (blurred wallpaper look) behind a frosted card
     Rectangle {
@@ -26,9 +26,9 @@ ApplicationWindow {
         radius: 0
         gradient: Gradient {
             orientation: Gradient.Horizontal
-            GradientStop { position: 0.0; color: win.dark ? "#ff1a2a6b" : "#ffcfe0ff" }
-            GradientStop { position: 0.5; color: win.dark ? "#ff301c5e" : "#ffeedcff" }
-            GradientStop { position: 1.0; color: win.dark ? "#ff0f4a63" : "#ffc8f3ff" }
+            GradientStop { position: 0.0; color: win.dark ? "#ff181825" : "#ffcfe0ff" }
+            GradientStop { position: 0.5; color: win.dark ? "#ff1e1e2e" : "#ffeedcff" }
+            GradientStop { position: 1.0; color: win.dark ? "#ff181825" : "#ffc8f3ff" }
         }
     }
 
@@ -81,7 +81,7 @@ ApplicationWindow {
                     Layout.minimumHeight: 96
                     radius: 18
                     color: area.containsMouse ? win.glassHover : win.glass
-                    border.color: modelData.act === "install" ? win.accent : (win.dark ? "#40ffffff" : "#b0ffffff")
+                    border.color: modelData.act === "install" ? win.accent : (win.dark ? "#45475a" : "#b0ffffff")
                     border.width: modelData.act === "install" ? 2 : 1
                     Behavior on color { ColorAnimation { duration: 120 } }
                     scale: area.pressed ? 0.97 : 1.0

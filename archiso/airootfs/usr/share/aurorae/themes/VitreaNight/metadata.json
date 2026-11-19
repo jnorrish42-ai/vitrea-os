@@ -1,0 +1,15 @@
+{
+  "KPackageStructure": "KWin/Aurorae",
+  "KPlugin": {
+    "Id": "VitreaNight",
+    "Name": "Vitrea Night",
+    "Description": "Liquid glass title bars",
+    "Authors": [
+      {
+        "Name": "Vitrea OS"
+      }
+    ],
+    "License": "CC-BY-SA-4.0",
+    "Version": "1.0"
+  }
+}

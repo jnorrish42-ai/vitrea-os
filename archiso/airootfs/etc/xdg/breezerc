@@ -1,6 +1,5 @@
 [Common]
-OutlineIntensity=OutlineLow
+OutlineIntensity=OutlineOff
 
-[Windows]
-DrawBackgroundGradient=false
-DrawBorderOnMaximizedWindows=false
+[Style]
+MenuOpacity=88

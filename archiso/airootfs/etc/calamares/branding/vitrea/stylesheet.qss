@@ -1,0 +1,12 @@
+/* Vitrea Night installer */
+#sidebarApp { background-color: #181825; border-right: 1px solid #313244; }
+#sidebarMenuApp { background-color: transparent; font-size: 15px; }
+QPushButton#view-button-back, QPushButton#view-button-next, QPushButton#view-button-cancel {
+    min-height: 30px; padding: 4px 18px; border-radius: 10px;
+    border: 1px solid #45475a; background-color: #313244; color: #cdd6f4;
+}
+QPushButton#view-button-back:hover, QPushButton#view-button-cancel:hover { background-color: #45475a; }
+QPushButton#view-button-next { color: #11111b; border: 0; background-color: #cba6f7; font-weight: bold; }
+QPushButton#view-button-next:hover { background-color: #b4befe; }
+QPushButton#view-button-back:disabled, QPushButton#view-button-next:disabled { color: #6c7086; background-color: #1e1e2e; }
+QLineEdit { border-radius: 8px; padding: 4px 8px; }

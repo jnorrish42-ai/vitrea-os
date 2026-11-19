@@ -2,10 +2,13 @@
 # Switch Vitrea between light and dark glass in one go.
 mode=${1:-toggle}
 cur=$(kreadconfig6 --group General --key ColorScheme)
-if [ "$mode" = toggle ]; then [[ $cur == *Dark* ]] && mode=light || mode=dark; fi
-if [ "$mode" = dark ]; then kv=VitreaGlassDark; cs=VitreaDark; else kv=VitreaGlass; cs=VitreaLight; fi
+if [ "$mode" = toggle ]; then [[ $cur == *Dark* || $cur == *Night* ]] && mode=light || mode=dark; fi
+if [ "$mode" = dark ]; then kv=VitreaGlassDark; cs=VitreaNight; deco=VitreaNight; else kv=VitreaGlass; cs=VitreaLight; deco=VitreaGlass; fi
 mkdir -p ~/.config/Kvantum
 kwriteconfig6 --file ~/.config/Kvantum/kvantum.kvconfig --group General --key theme "$kv"
 plasma-apply-colorscheme "$cs" >/dev/null 2>&1 || true
+kwriteconfig6 --file kwinrc --group org.kde.kdecoration2 --key library org.kde.kwin.aurorae
+kwriteconfig6 --file kwinrc --group org.kde.kdecoration2 --key theme "__aurorae__svg__$deco"
+dbus-send --session --type=signal /KWin org.kde.KWin.reloadConfig >/dev/null 2>&1 || true
 # Wallpaper has light & dark variants; Plasma picks the right one from the colour scheme.
 notify-send -a "Vitrea" -i vitrea-logo "Appearance" "Switched to $mode mode. Apps you open from now on use it." 2>/dev/null || true
