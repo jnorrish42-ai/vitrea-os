@@ -66,6 +66,18 @@ They're copied into `archiso/airootfs/etc/skel/` (commit recorded in
 (`.config/.zshrc` goes to `etc/skel/.zshrc`) and rebuild. The only change made to them:
 the browser is `firefox` instead of `brave` (Brave is AUR-only).
 
+## Status and known limitations
+
+Tested by booting the ISO (UEFI) in QEMU with software rendering:
+
+* ✅ Boots to the live Vitrea Glass desktop with auto-login, Welcome app, tree wallpaper, Liquid Glass bar/dock
+* ✅ Installer starts and shows its pages; DNS, NetworkManager, Flathub, SDDM all working
+* ✅ 43PR Hyprland session starts (Hyprland 0.57 + Quickshell bar, colours generated from the wallpaper)
+* ⚠️ A full install to disk has **not** been run end-to-end yet; try it in a VM before real hardware
+* ⚠️ In VMs without 3D acceleration, window shadows can render as pale rectangles and Hyprland's
+  wallpaper may not show; enable 3D acceleration (or use real hardware)
+* ⚠️ Secure Boot must be disabled (unsigned, like the Arch ISO)
+
 ## Credits
 
 * Arch Linux, KDE Plasma, Hyprland, Quickshell, Calamares
