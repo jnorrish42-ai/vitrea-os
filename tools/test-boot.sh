@@ -17,10 +17,14 @@ if [ "$MODE" = uefi ]; then
 fi
 DISK=()
 [ -n "${DISK_IMG:-}" ] && DISK=(-drive file="$DISK_IMG",if=virtio,format=qcow2)
-ACCEL=tcg,thread=multi; [ -e /dev/kvm ] && ACCEL=kvm
+# Under TCG, use a self-consistent CPU model without AVX2: QEMU 8.x mis-emulates masked
+# AVX2 gathers, which crashes Mesa llvmpipe (and with it kwin_wayland + the installer).
+# ("max,avx2=off" is not enough: Qt then picks VAES paths and dies with SIGILL.)
+ACCEL=tcg,thread=multi; CPU=${CPU:-SandyBridge}
+[ -e /dev/kvm ] && { ACCEL=kvm; CPU=${CPU_KVM:-host}; }
 MEDIA=(-cdrom "$ISO" -boot d)
 [ -n "${BOOT_DISK:-}" ] && MEDIA=(-boot c)
-qemu-system-x86_64 "${FW[@]}" -accel $ACCEL -cpu max -smp 4 -m 6144 \
+qemu-system-x86_64 "${FW[@]}" -accel $ACCEL -cpu $CPU -smp 4 -m 6144 \
   "${MEDIA[@]}" "${DISK[@]}" -vga ${VGA:-std} -display none \
   -monitor unix:$SOCK,server,nowait -qmp unix:$OUT/qmp.sock,server,nowait -serial file:$OUT/serial.log \
   -nic user,model=virtio-net-pci -device virtio-tablet-pci -device virtio-keyboard-pci &

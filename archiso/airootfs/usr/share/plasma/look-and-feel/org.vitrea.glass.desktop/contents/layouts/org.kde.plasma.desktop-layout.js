@@ -35,7 +35,7 @@ clock.currentConfigGroup = ["Appearance"];
 clock.writeConfig("dateDisplayFormat", "BesideTime");
 clock.writeConfig("dateFormat", "custom");
 clock.writeConfig("customDateFormat", "ddd d MMM");
-clock.writeConfig("showSeconds", "Never");
+clock.writeConfig("showSeconds", 0);
 clock.writeConfig("use24hFormat", 2);
 
 top.addWidget("org.kde.plasma.panelspacer");

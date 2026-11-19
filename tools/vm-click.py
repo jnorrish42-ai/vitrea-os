@@ -22,3 +22,4 @@ time.sleep(0.15)
 for _ in range(2 if '--double' in sys.argv else 1):
     ev([{'type': 'btn', 'data': {'down': True, 'button': btn}}]); time.sleep(0.08)
     ev([{'type': 'btn', 'data': {'down': False, 'button': btn}}]); time.sleep(0.12)
+f.close(); s.close()

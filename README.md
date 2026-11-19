@@ -3,7 +3,7 @@
 An easy-to-use, Arch-based Linux desktop with a dark, **riced** look ("Vitrea Night"),
 plus [43PR's Hyprland dotfiles](https://github.com/43PR/dotfiles) as a second desktop.
 
-![Vitrea OS desktop](screenshots/desktop-liquid-glass.png)
+![Vitrea OS desktop](screenshots/desktop.png)
 
 ## Two desktops, picked at the login screen
 
@@ -26,6 +26,8 @@ Both share the same apps and home folder. In the live session, open **Welcome �
 * **Launchpad:** a full-screen app grid on the left of the dock
 
 ![Login screen](screenshots/login.png)
+
+![Terminal](screenshots/terminal.png)
 
 ## Easy by default
 
@@ -63,31 +65,41 @@ sudo ./build.sh
 | `archiso/packages.x86_64` | every package on the ISO |
 | `archiso/airootfs/` | files placed into the OS: themes, layout, Welcome app, installer config, 43PR dotfiles in `/etc/skel` |
 | `archiso/airootfs/usr/local/bin/vitrea-customize` | one-time build step: branding, colour schemes, services |
-| `archiso/airootfs/usr/lib/vitrea/make-glass-theme.py` | turns Plasma's Breeze frames into Liquid Glass (re-run by a pacman hook after Plasma updates) |
+| `archiso/airootfs/usr/lib/vitrea/make-glass-theme.py` | tints Plasma's Breeze panel/popup frames to the dark Vitrea Night palette (re-run by a pacman hook after Plasma updates) |
 | `archiso/airootfs/etc/calamares/` | installer configuration and branding |
 | `pkgbuilds/` | local builds of the AUR packages: calamares, mpvpaper, papirus-folders, ttf-tabler-icons |
-| `art/` | generators for the Glass Blossom tree wallpaper (`make_tree.py`), glass window decorations (`make_decoration.py`), the liquid gradient, logo and installer slides |
-| `archiso/airootfs/usr/share/sddm/themes/vitrea/` | the Liquid Glass login screen (QML); preview it with `tools/preview-sddm.py` |
+| `art/` | generators for the night blossom tree wallpaper (`make_tree.py`), the Vitrea Night palette for Plasma and Konsole (`make_night.py`), window decorations (`make_decoration.py`), logo and installer slides |
+| `archiso/airootfs/usr/share/sddm/themes/vitrea/` | the login screen (QML); preview it with `tools/preview-sddm.py` |
 | `tools/` | QEMU boot test with screenshots (`test-boot.sh`), plus helpers to type into and screenshot the VM |
 
 ### Updating the 43PR dotfiles
 
 They're copied into `archiso/airootfs/etc/skel/` (commit recorded in
 `/usr/share/doc/43pr-dotfiles/COMMIT`). To update, re-copy `.config/` from the repo
-(`.config/.zshrc` goes to `etc/skel/.zshrc`) and rebuild. The only change made to them:
-the browser is `firefox` instead of `brave` (Brave is AUR-only).
+(`.config/.zshrc` goes to `etc/skel/.zshrc`) and rebuild. Two small changes were made to them:
+the browser is `firefox` instead of `brave` (Brave is AUR-only), and the `eza` aliases use
+`--icons=auto` (with current eza a bare `--icons` swallows the next argument, so `ls some/dir` failed).
 
 ## Status and known limitations
 
-Tested by booting the ISO (UEFI) in QEMU with software rendering:
+Tested end to end in QEMU (UEFI, software rendering, 40 GB virtual disk):
 
-* ✅ Boots to the live Vitrea Glass desktop with auto-login, Welcome app, tree wallpaper, Liquid Glass bar/dock
-* ✅ Installer starts and shows its pages; DNS, NetworkManager, Flathub, SDDM all working
+* ✅ Live boot: Vitrea splash → riced desktop with auto-login, Welcome app, night tree wallpaper
+* ✅ **Full install with the graphical installer** (erase disk, ext4) completes: "All done."
+* ✅ Installed system boots: splash → Vitrea login screen → riced desktop as the new user
+* ✅ After install: user in `wheel` with zsh + starship, root locked, installer and live user removed,
+  Plymouth in the initramfs, no failed services
 * ✅ 43PR Hyprland session starts (Hyprland 0.57 + Quickshell bar, colours generated from the wallpaper)
-* ⚠️ A full install to disk has **not** been run end-to-end yet; try it in a VM before real hardware
 * ⚠️ In VMs without 3D acceleration, window shadows can render as pale rectangles and Hyprland's
   wallpaper may not show; enable 3D acceleration (or use real hardware)
+* ⚠️ QEMU *without KVM* (pure software CPU emulation): use `-cpu SandyBridge`, not `-cpu max`.
+  QEMU 8's emulated AVX2 crashes the software renderer partway through an install
+  (`tools/test-boot.sh` does this for you). Real hardware and KVM VMs are unaffected.
 * ⚠️ Secure Boot must be disabled (unsigned, like the Arch ISO)
+
+| Installer finished | Installed system, first login |
+|---|---|
+| ![Installer finished](screenshots/install-done.png) | ![Installed desktop](screenshots/installed-desktop.png) |
 
 ## Credits
 
