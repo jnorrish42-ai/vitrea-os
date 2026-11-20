@@ -1,0 +1,151 @@
+#!/bin/bash
+# Vitrea system-wide look & identity. Safe to re-run: the vitrea-desktop package runs it after
+# every install/upgrade, so changes pushed to GitHub reach installed systems as normal updates.
+#   vitrea-apply            (first install / ISO build)
+#   vitrea-apply --upgrade  (also rebuild the initramfs if the boot splash changed)
+UPGRADE=0; [ "${1:-}" = "--upgrade" ] && UPGRADE=1
+splash_sum() { cat /usr/share/plymouth/themes/vitrea/* 2>/dev/null | md5sum; }
+before=$(splash_sum)
+
+# --- identity ---
+cat > /etc/os-release <<'OS'
+NAME="Vitrea OS"
+PRETTY_NAME="Vitrea OS"
+ID=vitrea
+ID_LIKE=arch
+BUILD_ID=rolling
+ANSI_COLOR="38;2;47;124;246"
+HOME_URL="https://archlinux.org/"
+DOCUMENTATION_URL="https://wiki.archlinux.org/"
+SUPPORT_URL="https://bbs.archlinux.org/"
+BUG_REPORT_URL="https://gitlab.archlinux.org/groups/archlinux/-/issues"
+LOGO=vitrea-logo
+OS
+cat > /etc/issue <<'OS'
+Vitrea OS \r (\l)
+
+OS
+# T2 Mac edition marker
+if [ -e /usr/lib/vitrea/t2-wifi-firmware ]; then
+  printf 'VARIANT="T2 Mac edition"\nVARIANT_ID=t2\n' >> /etc/os-release
+fi
+
+# --- colour schemes: Breeze + Vitrea glass-blue accent ---
+for v in Light Dark; do
+  src=/usr/share/color-schemes/Breeze$v.colors; dst=/usr/share/color-schemes/Vitrea$v.colors
+  [ -f "$src" ] || continue
+  sed -e "s/^Name=.*/Name=Vitrea $v/" -e 's/61,174,233/47,124,246/g' \
+      -e 's/^DecorationFocus=.*/DecorationFocus=47,124,246/' -e 's/^DecorationHover=.*/DecorationHover=47,124,246/' "$src" > "$dst"
+  if [ $v = Light ]; then
+    sed -i -e '/^\[WM\]/,/^\[/ s/^activeBackground=.*/activeBackground=236,239,247/' \
+           -e '/^\[WM\]/,/^\[/ s/^inactiveBackground=.*/inactiveBackground=240,242,248/' \
+           -e '/^\[WM\]/,/^\[/ s/^activeForeground=.*/activeForeground=20,24,42/' "$dst"
+    sed -i -e '/^\[WM\]/,/^\[/ s/^activeBackground=.*/activeBackground=236,239,247,165/' \
+           -e '/^\[WM\]/,/^\[/ s/^inactiveBackground=.*/inactiveBackground=240,242,248,140/' "$dst"
+  else
+    sed -i -e '/^\[WM\]/,/^\[/ s/^activeBackground=.*/activeBackground=32,36,52/' \
+           -e '/^\[WM\]/,/^\[/ s/^inactiveBackground=.*/inactiveBackground=28,31,44/' "$dst"
+    sed -i -e '/^\[WM\]/,/^\[/ s/^activeBackground=.*/activeBackground=32,36,52,175/' \
+           -e '/^\[WM\]/,/^\[/ s/^inactiveBackground=.*/inactiveBackground=28,31,44,150/' "$dst"
+  fi
+done
+
+# --- Liquid glass: rewrite Breeze's translucent frames in place (pacman hook keeps it after updates) ---
+python3 /usr/lib/vitrea/make-glass-theme.py
+printf '[Theme]\nname=default\n' > /etc/xdg/plasmarc
+
+# --- 43PR: white Papirus folders (as its installer does) ---
+command -v papirus-folders >/dev/null && papirus-folders -C white --theme Papirus-Dark || true
+command -v papirus-folders >/dev/null && papirus-folders -C white --theme Papirus || true
+
+
+# --- only our Hyprland session in the login menu (43PR flavour) ---
+rm -f /usr/share/wayland-sessions/hyprland.desktop /usr/share/wayland-sessions/hyprland-uwsm.desktop
+
+# --- new users get zsh (43PR uses zsh + starship) ---
+sed -i 's|^SHELL=.*|SHELL=/usr/bin/zsh|' /etc/default/useradd
+
+
+# --- notifications top-right (macOS-like) ---
+grep -q '^PopupPosition' /etc/xdg/plasmanotifyrc 2>/dev/null || printf '\n[Notifications]\nPopupPosition=TopRight\n' >> /etc/xdg/plasmanotifyrc
+
+# --- fonts cache, icon caches ---
+fc-cache -f >/dev/null 2>&1 || true
+gtk-update-icon-cache -q -t -f /usr/share/icons/hicolor 2>/dev/null || true
+
+
+# --- boot splash: Vitrea Plymouth theme (spinner engine, Vitrea colours + logo) ---
+if [ -d /usr/share/plymouth/themes/spinner ]; then
+  T=/usr/share/plymouth/themes/vitrea
+  mkdir -p "$T" && cp -a /usr/share/plymouth/themes/spinner/. "$T/"
+  rm -f "$T/spinner.plymouth"
+  cp /usr/share/vitrea/plymouth-watermark.png "$T/watermark.png"
+  cat > "$T/vitrea.plymouth" <<'PLY'
+[Plymouth Theme]
+Name=Vitrea
+Description=Vitrea OS boot splash
+ModuleName=two-step
+
+[two-step]
+Font=Inter 12
+TitleFont=Inter Light 30
+MonospaceFont=Noto Sans Mono 12
+ImageDir=/usr/share/plymouth/themes/vitrea
+DialogHorizontalAlignment=.5
+DialogVerticalAlignment=.62
+TitleHorizontalAlignment=.5
+TitleVerticalAlignment=.382
+HorizontalAlignment=.5
+VerticalAlignment=.74
+WatermarkHorizontalAlignment=.5
+WatermarkVerticalAlignment=.42
+Transition=none
+TransitionDuration=0.0
+BackgroundStartColor=0x11111b
+BackgroundEndColor=0x1e1e2e
+ProgressBarBackgroundColor=0x313244
+ProgressBarForegroundColor=0xffffff
+MessageBelowAnimation=true
+
+[boot-up]
+UseEndAnimation=false
+
+[shutdown]
+UseEndAnimation=false
+
+[reboot]
+UseEndAnimation=false
+
+[updates]
+SuppressMessages=true
+ProgressBarShowPercentComplete=true
+UseProgressBar=true
+Title=Installing Updates...
+SubTitle=Do not turn off your computer
+
+[system-upgrade]
+SuppressMessages=true
+ProgressBarShowPercentComplete=true
+UseProgressBar=true
+Title=Upgrading System...
+SubTitle=Do not turn off your computer
+PLY
+  plymouth-set-default-theme vitrea
+fi
+
+# --- updates: the Vitrea package repo (published from GitHub) ---
+if ! grep -q '^\[vitrea\]' /etc/pacman.conf; then
+  cat >> /etc/pacman.conf <<'CONF'
+
+# Vitrea OS updates (themes, apps, settings), published from GitHub
+[vitrea]
+SigLevel = Optional TrustAll
+Server = https://github.com/jnorrish42-ai/vitrea-os/releases/download/repo
+CONF
+fi
+
+# the boot splash lives in the initramfs: rebuild it on upgrades when the splash changed
+if [ $UPGRADE = 1 ] && [ "$before" != "$(splash_sum)" ] && command -v mkinitcpio >/dev/null; then
+  mkinitcpio -P || true
+fi
+exit 0

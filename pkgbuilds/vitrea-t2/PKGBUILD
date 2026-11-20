@@ -1,0 +1,15 @@
+# T2 Mac support for Vitrea (see wiki.t2linux.org): early T2 modules, iwd Wi-Fi backend,
+# Wi-Fi firmware from macOS, fan daemon condition, Mac Pro / iMac Pro GPU workaround.
+pkgname=vitrea-t2
+pkgver=${VITREA_PKGVER:-$(date -u +%Y.%m.%d.%H%M%S)}
+pkgrel=1
+pkgdesc="Vitrea OS support for Intel Macs with the T2 chip"
+arch=(any)
+url="https://github.com/jnorrish42-ai/vitrea-os"
+license=(custom)
+depends=(vitrea-desktop linux-t2 iwd t2fanrd apple-bcm-firmware-fetcher apple-t2-audio-config)
+install=vitrea-t2.install
+
+package() {
+  cp -a "$startdir/files/." "$pkgdir/"
+}

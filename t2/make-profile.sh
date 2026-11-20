@@ -13,9 +13,8 @@ LIVE_EXTRA="modprobe.blacklist=hci_bcm4377"
 
 rm -rf "$DST"
 cp -a "$SRC" "$DST"
-cp -a "$HERE/airootfs/." "$DST/airootfs/"
 
-# --- packages: T2 kernel instead of the stock one, plus T2 tools ---
+# --- packages: T2 kernel instead of the stock one, T2 tools, vitrea-t2 (files: pkgbuilds/vitrea-t2) ---
 grep -vxF -f "$HERE/packages.remove" "$SRC/packages.x86_64" > "$DST/packages.x86_64"
 cat "$HERE/packages.add" >> "$DST/packages.x86_64"
 
@@ -31,7 +30,6 @@ EOF
 sed -i -e 's/^iso_name=.*/iso_name="vitrea-os-t2"/' \
        -e 's/^iso_label="VITREA_/iso_label="VITREA_T2_/' \
        -e 's/^iso_application=.*/iso_application="Vitrea OS Live\/Install for T2 Macs"/' "$DST/profiledef.sh"
-sed -i 's|^)$|  ["/usr/local/bin/vitrea-customize-t2"]="0:0:755"\n  ["/usr/lib/vitrea/t2-wifi-firmware"]="0:0:755"\n  ["/usr/lib/vitrea/t2-copy-firmware"]="0:0:755"\n)|' "$DST/profiledef.sh"
 
 # --- live boot entries: kernel file names + T2 kernel parameters ---
 for f in "$DST"/efiboot/loader/entries/*.conf "$DST"/syslinux/*.cfg "$DST"/grub/*.cfg; do

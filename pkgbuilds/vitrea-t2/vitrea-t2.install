@@ -1,0 +1,23 @@
+_t2_repo() {
+  grep -q '^\[arch-mact2\]' /etc/pacman.conf && return
+  cat >> /etc/pacman.conf <<'CONF'
+
+# T2 Mac support (t2linux): linux-t2 kernel, audio config, fan daemon, Touch Bar
+[arch-mact2]
+SigLevel = Never
+Include = /etc/pacman.d/arch-mact2-mirrorlist
+CONF
+}
+
+post_install() {
+  _t2_repo
+  systemctl enable t2fanrd.service iwd.service vitrea-t2-wifi-firmware.service 2>/dev/null || true
+  # adds the "T2 Mac edition" marker to os-release
+  [ -x /usr/lib/vitrea/vitrea-apply ] && /usr/lib/vitrea/vitrea-apply
+  return 0
+}
+
+post_upgrade() {
+  _t2_repo
+  return 0
+}

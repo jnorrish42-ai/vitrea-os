@@ -1,0 +1,15 @@
+# Vitrea's own files as a package, so changes pushed to GitHub reach installed systems as updates.
+# The version is a UTC timestamp, so every build is newer than the last.
+pkgname=vitrea-desktop
+pkgver=${VITREA_PKGVER:-$(date -u +%Y.%m.%d.%H%M%S)}
+pkgrel=1
+pkgdesc="Vitrea OS look, apps and settings: theme, Welcome app, login screen, boot splash, wallpapers"
+arch=(any)
+url="https://github.com/jnorrish42-ai/vitrea-os"
+license=(custom)
+depends=(plasma-workspace sddm plymouth python python-pyqt6 kirigami)
+install=vitrea-desktop.install
+
+package() {
+  cp -a "$startdir/files/." "$pkgdir/"
+}

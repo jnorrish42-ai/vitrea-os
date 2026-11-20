@@ -217,3 +217,5 @@ jq
 curl
 unzip
 ## (AUR deps of 43PR built locally: mpvpaper papirus-folders ttf-tabler-icons)
+# Vitrea look, apps and settings (updatable from the Vitrea repo)
+vitrea-desktop

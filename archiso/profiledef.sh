@@ -21,11 +21,6 @@ file_permissions=(
   ["/usr/local/bin/livecd-sound"]="0:0:755"
   ["/usr/local/bin/vitrea-live-setup"]="0:0:755"
   ["/usr/local/bin/vitrea-customize"]="0:0:755"
-  ["/usr/bin/vitrea-welcome"]="0:0:755"
-  ["/usr/bin/vitrea-appearance"]="0:0:755"
   ["/usr/bin/vitrea-install"]="0:0:755"
-  ["/usr/bin/43pr-hyprland-session"]="0:0:755"
-  ["/usr/lib/vitrea/add-flathub"]="0:0:755"
-  ["/usr/lib/vitrea/make-glass-theme.py"]="0:0:755"
   ["/usr/lib/vitrea/calamares-cleanup"]="0:0:755"
 )

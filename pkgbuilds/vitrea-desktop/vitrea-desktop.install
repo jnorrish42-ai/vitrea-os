@@ -1,0 +1,7 @@
+post_install() {
+  /usr/lib/vitrea/vitrea-apply
+}
+
+post_upgrade() {
+  /usr/lib/vitrea/vitrea-apply --upgrade
+}
