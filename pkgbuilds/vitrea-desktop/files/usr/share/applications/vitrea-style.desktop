@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Vitrea Style
+GenericName=Customise the look
+Comment=Wallpaper, accent colour, Liquid Glass, animations, dock and widgets
+Icon=vitrea-logo
+Exec=vitrea-style
+Categories=Settings;DesktopSettings;
+Keywords=theme;glass;accent;wallpaper;animation;dock;customize;customise;

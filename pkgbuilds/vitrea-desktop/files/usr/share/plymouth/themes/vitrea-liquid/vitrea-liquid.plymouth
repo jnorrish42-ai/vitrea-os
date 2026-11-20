@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=Vitrea Liquid
+Description=Vitrea OS animated boot splash: the glass V, a breathing halo, an orbiting comet and drifting petals
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/vitrea-liquid
+ScriptFile=/usr/share/plymouth/themes/vitrea-liquid/vitrea-liquid.script

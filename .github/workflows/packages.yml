@@ -1,7 +1,11 @@
-# Publishes Vitrea's own packages (pkgbuilds/vitrea-desktop, pkgbuilds/vitrea-t2) as a pacman
-# repository, hosted as the assets of the "repo" release. Every Vitrea install has
+# Publishes Vitrea's packages as a pacman repository, hosted as the assets of the "repo" release.
+# Every Vitrea install has
 #   [vitrea]  Server = https://github.com/<owner>/<repo>/releases/download/repo
-# in /etc/pacman.conf, so a push here shows up in Discover / `sudo pacman -Syu` as an update.
+# in /etc/pacman.conf, so whatever is published here shows up in Discover / `sudo pacman -Syu`.
+#
+#   vitrea-desktop, vitrea-t2   rebuilt on every push that changes them (and on manual runs)
+#   kwin-effects-glass          rebuilt whenever Arch's kwin version changes (checked daily),
+#                               because KWin effects only load into the KWin they were built for
 name: Publish Vitrea updates
 
 on:
@@ -10,7 +14,10 @@ on:
     paths:
       - 'pkgbuilds/vitrea-desktop/**'
       - 'pkgbuilds/vitrea-t2/**'
+      - 'pkgbuilds/kwin-effects-glass/**'
       - '.github/workflows/packages.yml'
+  schedule:
+    - cron: '17 5 * * *'
   workflow_dispatch:
 
 permissions:
@@ -26,39 +33,73 @@ jobs:
     container: archlinux:base-devel
     env:
       GH_TOKEN: ${{ github.token }}
+      R: ${{ github.repository }}
     steps:
       - name: Tools
-        run: pacman -Syu --noconfirm --needed git github-cli
+        run: |
+          pacman -Syu --noconfirm --needed git github-cli kwin cmake extra-cmake-modules qt6-tools \
+            vulkan-headers wayland-protocols plasma-wayland-protocols
 
       - uses: actions/checkout@v4
 
-      - name: Build the packages
+      - name: Fetch the published packages
+        run: |
+          mkdir -p /tmp/repo && cd /tmp/repo
+          if gh release view repo -R "$R" >/dev/null 2>&1; then
+            gh release download repo -R "$R" --pattern '*.pkg.tar.zst' --pattern 'kwin-glass.built' || true
+          fi
+          ls -la
+
+      - name: Decide what to build
+        id: plan
+        run: |
+          kwin=$(pacman -Q kwin | cut -d' ' -f2)
+          glass_src=$(sha256sum pkgbuilds/kwin-effects-glass/PKGBUILD | cut -c1-16)
+          want="$kwin $glass_src"
+          have=$(cat /tmp/repo/kwin-glass.built 2>/dev/null || true)
+          echo "kwin=$kwin  built-for='$have'  want='$want'"
+          if [ "$want" != "$have" ] || ! ls /tmp/repo/kwin-effects-glass-*.pkg.tar.zst >/dev/null 2>&1; then
+            echo "glass=1" >> "$GITHUB_OUTPUT"
+          fi
+          if [ "${{ github.event_name }}" != "schedule" ] || ! ls /tmp/repo/vitrea-desktop-*.pkg.tar.zst >/dev/null 2>&1; then
+            echo "vitrea=1" >> "$GITHUB_OUTPUT"
+          fi
+          echo "$want" > /tmp/kwin-glass.want
+
+      - name: Build packages
+        if: steps.plan.outputs.glass == '1' || steps.plan.outputs.vitrea == '1'
         run: |
           useradd -m builder
-          export VITREA_PKGVER=$(date -u +%Y.%m.%d.%H%M%S)
-          mkdir -p /tmp/repo
-          for p in vitrea-desktop vitrea-t2; do
-            cp -r "pkgbuilds/$p" "/tmp/build-$p"
-            chown -R builder "/tmp/build-$p"
-            su builder -c "cd /tmp/build-$p && VITREA_PKGVER=$VITREA_PKGVER makepkg -d --noconfirm"
-            cp /tmp/build-$p/$p-[0-9]*.pkg.tar.zst /tmp/repo/
-          done
+          build() {  # build pkgbuilds/$1 with extra env, replace its old package in /tmp/repo
+            cp -r "pkgbuilds/$1" "/tmp/build-$1"; chown -R builder "/tmp/build-$1"
+            su builder -c "cd /tmp/build-$1 && $2 makepkg $3 --noconfirm"
+            rm -f /tmp/repo/$1-[0-9]*.pkg.tar.zst
+            cp /tmp/build-$1/$1-[0-9]*.pkg.tar.zst /tmp/repo/
+          }
+          if [ "${{ steps.plan.outputs.glass }}" = 1 ]; then
+            build kwin-effects-glass "VITREA_REL=$(date -u +%Y%m%d%H%M)" ""
+            cp /tmp/kwin-glass.want /tmp/repo/kwin-glass.built
+          fi
+          if [ "${{ steps.plan.outputs.vitrea }}" = 1 ]; then
+            v=$(date -u +%Y.%m.%d.%H%M%S)
+            build vitrea-desktop "VITREA_PKGVER=$v" "-d"
+            build vitrea-t2 "VITREA_PKGVER=$v" "-d"
+          fi
+
+      - name: Publish to the "repo" release
+        if: steps.plan.outputs.glass == '1' || steps.plan.outputs.vitrea == '1'
+        run: |
           cd /tmp/repo
+          rm -f vitrea.db* vitrea.files*
           repo-add vitrea.db.tar.gz *.pkg.tar.zst
           # release assets can't be symlinks: pacman fetches vitrea.db / vitrea.files by those names
           for f in vitrea.db vitrea.files; do cp --remove-destination "$(readlink -f $f)" $f; done
-          ls -la
-
-      - name: Publish to the "repo" release
-        run: |
-          R="$GITHUB_REPOSITORY"
           if ! gh release view repo -R "$R" >/dev/null 2>&1; then
             gh release create repo -R "$R" --target "$GITHUB_SHA" --prerelease \
               --title "Vitrea update repository" \
               --notes "Package repository that installed Vitrea systems update from (via Discover or \`sudo pacman -Syu\`). Not an install image: get the ISO from the latest release."
           fi
-          cd /tmp/repo
-          gh release upload repo -R "$R" --clobber vitrea.db vitrea.db.tar.gz vitrea.files vitrea.files.tar.gz *.pkg.tar.zst
+          gh release upload repo -R "$R" --clobber vitrea.db vitrea.db.tar.gz vitrea.files vitrea.files.tar.gz kwin-glass.built *.pkg.tar.zst
           # drop package files from older builds (after the new database is up, so clients never 404)
           keep=$(ls *.pkg.tar.zst)
           gh release view repo -R "$R" --json assets -q '.assets[].name' | grep '\.pkg\.tar\.zst$' | while read -r a; do

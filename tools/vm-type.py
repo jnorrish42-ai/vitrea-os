@@ -15,5 +15,5 @@ def keys(ch):
 s = socket.socket(socket.AF_UNIX); s.connect(sock); s.recv(4096)
 seq = [keys(c) for c in text] + (['ret'] if '--enter' in sys.argv else [])
 for k in seq:
-    s.send(f'sendkey {k}\n'.encode()); time.sleep(0.08)
+    s.send(f'sendkey {k} 25\n'.encode()); time.sleep(0.12)  # short hold: no auto-repeat under load
 time.sleep(0.3); s.close()

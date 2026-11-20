@@ -1,0 +1,14 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [{ "Name": "Vitrea OS" }],
+        "Category": "Date and Time",
+        "Description": "A big, glowing desktop clock",
+        "Icon": "preferences-system-time",
+        "Id": "org.vitrea.clock",
+        "License": "GPL-2.0-or-later",
+        "Name": "Vitrea Clock",
+        "Version": "1.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

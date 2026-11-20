@@ -1,0 +1,169 @@
+// Vitrea Liquid boot splash (Plymouth script module)
+// The glass V rises out of the night, a halo breathes behind it, a comet of light orbits it
+// while petals drift up through the screen, and a glass bar fills with boot progress.
+
+W = Window.GetWidth(); H = Window.GetHeight();
+OX = Window.GetX(); OY = Window.GetY();
+Window.SetBackgroundTopColor(0.043, 0.043, 0.078);
+Window.SetBackgroundBottomColor(0.105, 0.082, 0.188);
+
+big = 0;
+if (H > 1300) big = 1;
+if (big) logo_img = Image("logo-240.png"); else logo_img = Image("logo-160.png");
+LS = logo_img.GetWidth();
+CX = OX + W / 2;
+CY = OY + H * 0.44;
+
+// ---- halo ----
+halo_img = Image("halo.png");
+if (big) halo_img = halo_img.Scale(780, 780);
+HS = halo_img.GetWidth();
+halo = Sprite(halo_img);
+halo.SetPosition(CX - HS / 2, CY - HS / 2, 1);
+halo.SetOpacity(0);
+
+// ---- logo ----
+logo = Sprite(logo_img);
+logo.SetOpacity(0);
+
+// ---- comet orbit ----
+dot_img = Image("dot.png");
+N = 16;
+R = LS * 0.86;
+for (i = 0; i < N; i++) {
+    dots[i] = Sprite(dot_img);
+    dots[i].SetOpacity(0);
+}
+
+// ---- petals ----
+pimg[0] = Image("petal0.png"); pimg[1] = Image("petal1.png"); pimg[2] = Image("petal2.png");
+P = 36;
+for (i = 0; i < P; i++) {
+    pet[i] = Sprite(pimg[i % 3]);
+    px[i] = OX + Math.Random() * W;
+    py[i] = OY + Math.Random() * H;
+    pv[i] = 0.3 + Math.Random() * 0.9;     // rise speed
+    pp[i] = Math.Random() * 6.28;          // sway phase
+    pa[i] = 0.12 + Math.Random() * 0.45;   // opacity
+    pet[i].SetOpacity(0);
+}
+
+// ---- progress bar ----
+mode = Plymouth.GetMode();
+show_bar = 1;
+if (mode == "shutdown" || mode == "reboot") show_bar = 0;
+track_img = Image("track.png");
+fill_src = Image("fill.png");
+BW = track_img.GetWidth();
+BX = CX - BW / 2;
+BY = CY + LS / 2 + 96;
+track = Sprite(track_img);
+track.SetPosition(BX, BY, 3);
+track.SetOpacity(0);
+fill = Sprite();
+fill.SetPosition(BX, BY, 4);
+progress = 0; shown = 0; last_w = 0;
+
+// ---- password dialog ----
+entry_img = Image("entry.png");
+EW = entry_img.GetWidth(); EH = entry_img.GetHeight();
+EX = CX - EW / 2; EY = BY - EH / 2;
+entry = Sprite(entry_img); entry.SetPosition(EX, EY, 10); entry.SetOpacity(0);
+lock = Sprite(Image("lock.png")); lock.SetPosition(EX + 14, EY + (EH - 32) / 2, 11); lock.SetOpacity(0);
+prompt = Sprite(); prompt.SetOpacity(0);
+bullet_img = Image("bullet.png");
+nb = 0;
+dialog = 0;
+
+// ---- message line ----
+msg = Sprite(); msg.SetOpacity(0);
+
+t = 0;
+fun refresh() {
+    t++;
+    // intro: fade in and rise over ~1.2 s, ease-out
+    k = t / 60;
+    if (k > 1) k = 1;
+    e = 1 - (1 - k) * (1 - k) * (1 - k);
+    logo.SetPosition(CX - LS / 2, CY - LS / 2 + (1 - e) * 28, 5);
+    logo.SetOpacity(e);
+    halo.SetOpacity(e * (0.55 + 0.25 * Math.Sin(t / 38)));
+
+    // comet: the head moves round the ring, the tail fades behind it
+    head = t / 7;
+    for (i = 0; i < N; i++) {
+        a = i / N * 6.2832 - 1.5708;
+        dots[i].SetPosition(CX + Math.Cos(a) * R - 14, CY + Math.Sin(a) * R - 14, 4);
+        d = head - i;
+        d = d - Math.Int(d / N) * N;
+        if (d < 0) d = d + N;
+        o = 1 - d / 7;
+        if (o < 0) o = 0;
+        dots[i].SetOpacity(o * e * 0.9);
+    }
+
+    // petals rise and sway
+    for (i = 0; i < P; i++) {
+        py[i] = py[i] - pv[i];
+        if (py[i] < OY - 40) {
+            py[i] = OY + H + 20;
+            px[i] = OX + Math.Random() * W;
+        }
+        pet[i].SetPosition(px[i] + Math.Sin(t / 60 + pp[i]) * 26, py[i], 2);
+        pet[i].SetOpacity(pa[i] * e);
+    }
+
+    // progress glides toward the real value
+    if (shown < progress) shown = shown + (progress - shown) * 0.08;
+    if (show_bar && !dialog) {
+        track.SetOpacity(e * 0.9);
+        w = Math.Int(BW * shown);
+        if (w > 8 && w != last_w) {
+            fill.SetImage(fill_src.Scale(w, fill_src.GetHeight()));
+            last_w = w;
+        }
+        if (w > 8) fill.SetOpacity(e);
+    } else {
+        track.SetOpacity(0);
+        fill.SetOpacity(0);
+    }
+}
+Plymouth.SetRefreshFunction(refresh);
+
+fun boot_progress(duration, p) {
+    progress = p;
+}
+Plymouth.SetBootProgressFunction(boot_progress);
+
+fun display_password(text, bullets) {
+    dialog = 1;
+    entry.SetOpacity(1);
+    lock.SetOpacity(1);
+    prompt.SetImage(Image.Text(text, 0.86, 0.86, 1.0, 1, "Sans 12"));
+    prompt.SetPosition(CX - prompt.GetImage().GetWidth() / 2, EY - 34, 10);
+    prompt.SetOpacity(1);
+    if (bullets > 14) bullets = 14;
+    for (i = 0; i < bullets || i < nb; i++) {
+        if (!bul[i]) bul[i] = Sprite(bullet_img);
+        bul[i].SetPosition(EX + 58 + i * 20, EY + (EH - 14) / 2, 11);
+        if (i < bullets) bul[i].SetOpacity(1); else bul[i].SetOpacity(0);
+    }
+    if (bullets > nb) nb = bullets;
+}
+Plymouth.SetDisplayPasswordFunction(display_password);
+
+fun display_normal() {
+    dialog = 0;
+    entry.SetOpacity(0);
+    lock.SetOpacity(0);
+    prompt.SetOpacity(0);
+    for (i = 0; i < nb; i++) bul[i].SetOpacity(0);
+}
+Plymouth.SetDisplayNormalFunction(display_normal);
+
+fun message(text) {
+    msg.SetImage(Image.Text(text, 0.80, 0.82, 0.95, 1, "Sans 11"));
+    msg.SetPosition(CX - msg.GetImage().GetWidth() / 2, OY + H - 70, 10);
+    msg.SetOpacity(1);
+}
+Plymouth.SetMessageFunction(message);

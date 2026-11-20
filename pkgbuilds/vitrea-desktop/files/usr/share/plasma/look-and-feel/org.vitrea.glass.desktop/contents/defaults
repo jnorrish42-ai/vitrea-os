@@ -8,7 +8,7 @@ ColorScheme=VitreaNight
 Theme=Papirus-Dark
 
 [plasmarc][Theme]
-name=default
+name=vitrea-liquid
 
 [kcminputrc][Mouse]
 cursorTheme=breeze_cursors
@@ -24,7 +24,8 @@ library=org.kde.kwin.aurorae
 theme=__aurorae__svg__VitreaNight
 
 [KSplash]
-Theme=org.kde.Breeze
+Engine=KSplashQML
+Theme=org.vitrea.glass.desktop
 
 [Wallpaper]
-Image=Vitrea
+Image=VitreaDusk

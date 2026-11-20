@@ -72,6 +72,7 @@ ApplicationWindow {
                     { act: "wifi",     icon: "network-wireless",        title: "Connect to Wi-Fi", desc: "Join a wireless network.", live: false },
                     { act: "display",  icon: "video-display",           title: "Displays",         desc: "Screen size, scaling and night light.", live: false },
                     { act: "updates",  icon: "update-none",             title: "Updates",          desc: "Keep your system safe and up to date.", live: false },
+                    { act: "style",    icon: "vitrea-logo",             title: "Vitrea Style",     desc: "Wallpaper, accent colour, Liquid Glass, animations and widgets.", live: false },
                     { act: "settings", icon: "preferences-system",      title: "All Settings",     desc: "Personalise everything else.", live: false }
                 ].filter(function (m) { return (backend.live || !m.live) && (backend.appleT2 || !m.t2) })
 

@@ -11,16 +11,64 @@ Number=4
 Rows=1
 
 [Plugins]
-blurEnabled=true
-contrastEnabled=true
-magiclampEnabled=false
+# Liquid Glass (kwin-effects-glass) replaces the stock blur + contrast effects.
+# vitrea-glass-guard switches back to plain blur on machines without GPU acceleration.
+blurEnabled=false
+contrastEnabled=false
+glassEnabled=true
+# fluid animations: scale in/out, squash to the dock, slide between workspaces
 scaleEnabled=true
-overviewEnabled=true
+squashEnabled=true
+magiclampEnabled=false
 slideEnabled=true
+maximizeEnabled=true
+fadingpopupsEnabled=true
+slidingpopupsEnabled=true
+wobblywindowsEnabled=false
+overviewEnabled=true
 
-[Effect-blur]
-BlurStrength=6
-NoiseStrength=0
+[Effect-blurplus]
+BlurStrength=5
+DockBlurStrength=3
+DecorationBlurStrength=5
+BlurMenus=true
+BlurDocks=true
+BlurMatching=false
+BlurNonMatching=false
+Saturation=1.35
+RefractionStrength=10
+RefractionEdgeSize=14
+RefractionNormalPow=4
+RefractionRGBFringing=2
+RefractionOffsetStrength=8
+RefractionBevelIntensity=10
+EdgeLighting=true
+EdgeLightingDock=true
+RimSpecular=true
+RimSpecularScale=12
+RimWidth=18
+CursorRim=true
+CursorRimStrength=50
+SquircleCorners=true
+EdgeShading=true
+EdgeShadowStrength=40
+UseDeclaredCornerRadius=true
+DockCornerRadius=16
+MenuCornerRadius=14
+TopCornerRadius=12
+BottomCornerRadius=12
+SeparateNotificationCorners=true
+NotificationTopCornerRadius=16
+NotificationBottomCornerRadius=16
+
+[Effect-slide]
+HorizontalGap=48
+SlideBackground=false
+
+[Effect-wobblywindows]
+Stiffness=8
+Drag=85
+WobblynessLevel=1
 
 [Effect-overview]
 BorderActivate=9

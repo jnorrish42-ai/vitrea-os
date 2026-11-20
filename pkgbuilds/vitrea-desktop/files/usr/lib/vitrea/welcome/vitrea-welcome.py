@@ -71,6 +71,7 @@ class Backend(QObject):
             "hyprland": ["dbus-send", "--session", "--dest=org.kde.LogoutPrompt", "/LogoutPrompt", "org.kde.LogoutPrompt.promptLogout"],
             "wifi": ["systemsettings", "kcm_networkmanagement"],
             "settings": ["systemsettings"],
+            "style": ["vitrea-style"],
             "display": ["systemsettings", "kcm_kscreen"],
             "updates": ["plasma-discover", "--mode", "update"],
             "light": ["vitrea-appearance", "light"],

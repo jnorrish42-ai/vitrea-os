@@ -1,5 +1,5 @@
-// Vitrea Night default desktop: slim riced top bar + minimal floating dock.
-var wallpaper = "file:///usr/share/wallpapers/Vitrea/";
+// Vitrea Liquid default desktop: slim glass top bar, floating glass dock, big clock + music widget.
+var wallpaper = "file:///usr/share/wallpapers/VitreaDusk/";
 
 desktops().forEach(function (d) {
     d.wallpaperPlugin = "org.kde.image";
@@ -51,15 +51,9 @@ trySet(dock, "alignment", "center");
 trySet(dock, "hiding", "none");
 trySet(dock, "opacity", "translucent");
 
-var launchpad = dock.addWidget("org.kde.plasma.kickerdash");
-launchpad.currentConfigGroup = ["General"];
-launchpad.writeConfig("icon", "vitrea-launchpad");
-launchpad.writeConfig("useCustomButtonImage", true);
-launchpad.writeConfig("customButtonImage", "/usr/share/icons/hicolor/scalable/apps/vitrea-launchpad.svg");
-launchpad.writeConfig("showRecentApps", false);
-launchpad.writeConfig("showRecentDocs", false);
-
+// "Launchpad" opens KWin's Overview: all windows + app search (Plasma 6.8 has no dashboard widget)
 var launchers = [
+    "applications:vitrea-overview.desktop",
     "applications:org.kde.konsole.desktop",
     "applications:org.kde.dolphin.desktop",
     "applications:firefox.desktop",
@@ -78,3 +72,12 @@ tasks.writeConfig("iconSpacing", 1);
 tasks.writeConfig("maxStripes", 1);
 tasks.writeConfig("showOnlyCurrentDesktop", false);
 tasks.writeConfig("indicateAudioStreams", true);
+
+// ---------- Desktop widgets: big clock (right) + music player (bottom left) ----------
+desktops().forEach(function (d) {
+    var g = screenGeometry(d.screen);
+    var cw = Math.round(g.width * 0.22), ch = Math.round(g.height * 0.40);
+    var clockW = d.addWidget("org.vitrea.clock", g.width - cw - Math.round(g.width * 0.06), Math.round(g.height * 0.16), cw, ch);
+    var mw = Math.round(g.width * 0.24), mh = Math.round(g.height * 0.17);
+    var media = d.addWidget("org.kde.plasma.mediacontroller", Math.round(g.width * 0.03), g.height - mh - Math.round(g.height * 0.14), mw, mh);
+});

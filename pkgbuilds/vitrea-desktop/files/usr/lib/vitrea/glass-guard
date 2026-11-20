@@ -1,0 +1,24 @@
+#!/bin/bash
+# Liquid Glass (the KWin "glass" effect) needs a real GPU. On software rendering (VMs without
+# 3D, missing drivers) its shaders would stall the desktop, so fall back to plain blur there.
+# Runs before KWin starts (vitrea-glass-guard.service). Choice in ~/.config/vitrearc:
+#   [Glass] Mode=auto|on|off   (Vitrea Style -> Glass effect)
+mode=$(kreadconfig6 --file vitrearc --group Glass --key Mode --default auto)
+gpu=0
+for d in /sys/class/drm/card*/device/driver; do
+  case "$(basename "$(readlink -f "$d")" 2>/dev/null)" in
+    amdgpu|radeon|i915|xe|nouveau|nvidia|nvidia-drm) gpu=1 ;;
+  esac
+done
+w() { kwriteconfig6 --file kwinrc --group Plugins --key "$1" "$2"; }
+if [ "$mode" = off ] || { [ "$mode" = auto ] && [ $gpu = 0 ]; }; then
+  w glassEnabled false; w blurEnabled true; w contrastEnabled true
+  kwriteconfig6 --file vitrearc --group Glass --key GuardOverride true
+elif [ "$(kreadconfig6 --file vitrearc --group Glass --key GuardOverride)" = true ] || [ "$mode" = on ]; then
+  # hand control back to the system defaults (/etc/xdg/kwinrc: glass on)
+  for k in glassEnabled blurEnabled contrastEnabled; do
+    kwriteconfig6 --file kwinrc --group Plugins --key "$k" --delete
+  done
+  kwriteconfig6 --file vitrearc --group Glass --key GuardOverride --delete
+fi
+exit 0

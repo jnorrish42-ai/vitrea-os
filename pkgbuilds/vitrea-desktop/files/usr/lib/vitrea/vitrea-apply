@@ -4,7 +4,7 @@
 #   vitrea-apply            (first install / ISO build)
 #   vitrea-apply --upgrade  (also rebuild the initramfs if the boot splash changed)
 UPGRADE=0; [ "${1:-}" = "--upgrade" ] && UPGRADE=1
-splash_sum() { cat /usr/share/plymouth/themes/vitrea/* 2>/dev/null | md5sum; }
+splash_sum() { { plymouth-set-default-theme 2>/dev/null; cat /usr/share/plymouth/themes/vitrea-liquid/* 2>/dev/null; } | md5sum; }
 before=$(splash_sum)
 
 # --- identity ---
@@ -50,9 +50,11 @@ for v in Light Dark; do
   fi
 done
 
-# --- Liquid glass: rewrite Breeze's translucent frames in place (pacman hook keeps it after updates) ---
-python3 /usr/lib/vitrea/make-glass-theme.py
-printf '[Theme]\nname=default\n' > /etc/xdg/plasmarc
+# --- Liquid Glass Plasma themes (clear / balanced / frosted), rebuilt by a pacman hook when Plasma updates ---
+python3 /usr/lib/vitrea/make-liquid-themes.py
+printf '[Theme]\nname=vitrea-liquid\n' > /etc/xdg/plasmarc
+# Liquid Glass only with a GPU (falls back to plain blur in VMs / without drivers)
+systemctl --global enable vitrea-glass-guard.service 2>/dev/null || true
 
 # --- 43PR: white Papirus folders (as its installer does) ---
 command -v papirus-folders >/dev/null && papirus-folders -C white --theme Papirus-Dark || true
@@ -74,63 +76,10 @@ fc-cache -f >/dev/null 2>&1 || true
 gtk-update-icon-cache -q -t -f /usr/share/icons/hicolor 2>/dev/null || true
 
 
-# --- boot splash: Vitrea Plymouth theme (spinner engine, Vitrea colours + logo) ---
-if [ -d /usr/share/plymouth/themes/spinner ]; then
-  T=/usr/share/plymouth/themes/vitrea
-  mkdir -p "$T" && cp -a /usr/share/plymouth/themes/spinner/. "$T/"
-  rm -f "$T/spinner.plymouth"
-  cp /usr/share/vitrea/plymouth-watermark.png "$T/watermark.png"
-  cat > "$T/vitrea.plymouth" <<'PLY'
-[Plymouth Theme]
-Name=Vitrea
-Description=Vitrea OS boot splash
-ModuleName=two-step
-
-[two-step]
-Font=Inter 12
-TitleFont=Inter Light 30
-MonospaceFont=Noto Sans Mono 12
-ImageDir=/usr/share/plymouth/themes/vitrea
-DialogHorizontalAlignment=.5
-DialogVerticalAlignment=.62
-TitleHorizontalAlignment=.5
-TitleVerticalAlignment=.382
-HorizontalAlignment=.5
-VerticalAlignment=.74
-WatermarkHorizontalAlignment=.5
-WatermarkVerticalAlignment=.42
-Transition=none
-TransitionDuration=0.0
-BackgroundStartColor=0x11111b
-BackgroundEndColor=0x1e1e2e
-ProgressBarBackgroundColor=0x313244
-ProgressBarForegroundColor=0xffffff
-MessageBelowAnimation=true
-
-[boot-up]
-UseEndAnimation=false
-
-[shutdown]
-UseEndAnimation=false
-
-[reboot]
-UseEndAnimation=false
-
-[updates]
-SuppressMessages=true
-ProgressBarShowPercentComplete=true
-UseProgressBar=true
-Title=Installing Updates...
-SubTitle=Do not turn off your computer
-
-[system-upgrade]
-SuppressMessages=true
-ProgressBarShowPercentComplete=true
-UseProgressBar=true
-Title=Upgrading System...
-SubTitle=Do not turn off your computer
-PLY
-  plymouth-set-default-theme vitrea
+# --- boot splash: "Vitrea Liquid" (animated, Plymouth script module) ---
+if command -v plymouth-set-default-theme >/dev/null && [ -d /usr/share/plymouth/themes/vitrea-liquid ]; then
+  plymouth-set-default-theme vitrea-liquid
+  rm -rf /usr/share/plymouth/themes/vitrea     # the old spinner-based theme
 fi
 
 # --- updates: the Vitrea package repo (published from GitHub) ---

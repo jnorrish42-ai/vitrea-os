@@ -1,0 +1,25 @@
+# Liquid glass for KWin: blur with refraction, rim/specular light, squircle corners.
+# Fork: https://github.com/AndyKaslana/kwin-effects-glass (of 4v3ngR/kwin-effects-glass), GPL-3.0.
+# KWin effects must match the exact KWin they were built against, so the Vitrea repo
+# rebuilds this whenever Arch updates kwin (pkgrel = build timestamp).
+pkgname=kwin-effects-glass
+pkgver=1.6.3
+_commit=32844d67d9d4e64c6cfa13f61fb102139878368b
+pkgrel=${VITREA_REL:-1}
+pkgdesc="Liquid glass KWin effect (refraction, rim light, squircle corners) used by Vitrea OS"
+arch=(x86_64)
+url="https://github.com/AndyKaslana/kwin-effects-glass"
+license=(GPL-3.0-or-later)
+depends=(kwin)
+makedepends=(git cmake extra-cmake-modules qt6-tools vulkan-headers wayland-protocols plasma-wayland-protocols)
+source=("glass::git+https://github.com/AndyKaslana/kwin-effects-glass.git#commit=$_commit")
+sha256sums=('SKIP')
+
+build() {
+  cmake -B build -S glass -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF
+  cmake --build build -j"$(nproc)"
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}
