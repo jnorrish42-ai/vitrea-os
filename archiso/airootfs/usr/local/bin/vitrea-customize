@@ -74,6 +74,12 @@ systemctl enable fstrim.timer paccache.timer 2>/dev/null || true
 # NetworkManager handles "network online"; networkd's waiter would just time out
 systemctl mask systemd-networkd-wait-online.service
 
+# --- edition extras (the T2 Mac edition adds vitrea-customize-t2; see t2/) ---
+if [ -x /usr/local/bin/vitrea-customize-t2 ]; then
+  /usr/local/bin/vitrea-customize-t2
+  rm -f /usr/local/bin/vitrea-customize-t2
+fi
+
 # --- notifications top-right (macOS-like) ---
 grep -q '^PopupPosition' /etc/xdg/plasmanotifyrc 2>/dev/null || printf '\n[Notifications]\nPopupPosition=TopRight\n' >> /etc/xdg/plasmanotifyrc
 # --- sddm owns its state dir (we pre-seeded Plasma as the default session) ---

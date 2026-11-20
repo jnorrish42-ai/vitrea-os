@@ -1,0 +1,7 @@
+#!/bin/bash
+# Copy the Mac's Wi-Fi/Bluetooth firmware out of macOS (mounted read-only) the first time
+# Vitrea boots on a T2 Mac. Apple's firmware can't be shipped on the ISO.
+# Manual retry: Welcome -> "Mac Wi-Fi Setup", or: sudo apple-bcm-firmware-fetcher -v
+[ "$(cat /sys/class/dmi/id/sys_vendor 2>/dev/null)" = "Apple Inc." ] || exit 0
+[ -s /var/lib/apple-bcm-firmware-fetcher/installed-files ] && exit 0
+exec /usr/bin/apple-bcm-firmware-fetcher

@@ -1,0 +1,13 @@
+[Unit]
+Description=Fetch the Mac Wi-Fi/Bluetooth firmware from macOS (T2 Macs)
+ConditionPathExists=!/var/lib/apple-bcm-firmware-fetcher/installed-files
+After=local-fs.target
+
+[Service]
+Type=oneshot
+# "-": no macOS left on the disk is not an error; the Welcome app offers a manual retry
+ExecStart=-/usr/lib/vitrea/t2-wifi-firmware
+TimeoutStartSec=180
+
+[Install]
+WantedBy=multi-user.target

@@ -22,10 +22,25 @@ def is_live():
         return False
 
 
+def is_apple_t2():
+    """T2 edition on Apple hardware: offer the Mac Wi-Fi firmware helper."""
+    if not shutil.which("apple-bcm-firmware-fetcher"):
+        return False
+    try:
+        with open("/sys/class/dmi/id/sys_vendor") as f:
+            return f.read().strip() == "Apple Inc."
+    except OSError:
+        return False
+
+
 class Backend(QObject):
     @pyqtProperty(bool, constant=True)
     def live(self):
         return is_live()
+
+    @pyqtProperty(bool, constant=True)
+    def appleT2(self):
+        return is_apple_t2()
 
     @pyqtProperty(bool, constant=True)
     def darkMode(self):
@@ -61,6 +76,7 @@ class Backend(QObject):
             "light": ["vitrea-appearance", "light"],
             "dark": ["vitrea-appearance", "dark"],
             "help": ["xdg-open", "https://wiki.archlinux.org/"],
+            "macwifi": ["konsole", "--hold", "-e", "sudo", "apple-bcm-firmware-fetcher", "-v"],
         }
         cmd = cmds.get(action)
         if cmd and shutil.which(cmd[0]):

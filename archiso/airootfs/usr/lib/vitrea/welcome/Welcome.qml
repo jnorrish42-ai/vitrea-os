@@ -68,11 +68,12 @@ ApplicationWindow {
                     { act: "install",  icon: "system-software-install", title: "Install Vitrea",   desc: "Put Vitrea on this computer. Takes about 10 minutes.", live: true },
                     { act: "apps",     icon: "plasmadiscover",          title: "Get Apps",         desc: "Browse thousands of free apps in Discover.", live: false },
                     { act: "hyprland", icon: "preferences-system-windows", title: "Try Hyprland",   desc: "Log out, then pick Hyprland (43PR) on the login screen.", live: false },
+                    { act: "macwifi",  icon: "network-wireless-hotspot", title: "Mac Wi-Fi Setup", desc: "Copy your Mac's Wi-Fi and Bluetooth firmware from macOS.", live: false, t2: true },
                     { act: "wifi",     icon: "network-wireless",        title: "Connect to Wi-Fi", desc: "Join a wireless network.", live: false },
                     { act: "display",  icon: "video-display",           title: "Displays",         desc: "Screen size, scaling and night light.", live: false },
                     { act: "updates",  icon: "update-none",             title: "Updates",          desc: "Keep your system safe and up to date.", live: false },
                     { act: "settings", icon: "preferences-system",      title: "All Settings",     desc: "Personalise everything else.", live: false }
-                ].filter(function (m) { return backend.live || !m.live })
+                ].filter(function (m) { return (backend.live || !m.live) && (backend.appleT2 || !m.t2) })
 
                 delegate: Rectangle {
                     required property var modelData

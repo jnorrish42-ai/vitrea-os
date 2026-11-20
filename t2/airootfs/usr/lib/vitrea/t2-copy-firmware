@@ -1,0 +1,12 @@
+#!/bin/bash
+# Installer step (runs on the live system): carry Wi-Fi/Bluetooth firmware fetched in the
+# live session over to the new system, so it survives even when macOS gets erased.
+ROOT=$1
+LIST=/var/lib/apple-bcm-firmware-fetcher/installed-files
+[ -n "$ROOT" ] && [ -s "$LIST" ] || exit 0
+mkdir -p "$ROOT/usr/lib/firmware/brcm" "$ROOT/var/lib/apple-bcm-firmware-fetcher"
+while read -r f; do
+  [ -n "$f" ] && [ -e "/usr/lib/firmware/brcm/$f" ] && cp -a "/usr/lib/firmware/brcm/$f" "$ROOT/usr/lib/firmware/brcm/$f"
+done < "$LIST"
+cp "$LIST" "$ROOT/var/lib/apple-bcm-firmware-fetcher/installed-files"
+exit 0

@@ -1,0 +1,5 @@
+# Mac Pro 2019 / iMac Pro: AMD GPUs can crash on mode changes with dynamic power management.
+# t2linux's documented workaround is to pin the performance level to "high".
+# Delete this file to go back to the default ("auto"), e.g. to lower idle power and fan noise.
+ACTION=="add|change", SUBSYSTEM=="drm", KERNEL=="card[0-9]*", DRIVERS=="amdgpu", ATTR{[dmi/id]product_name}=="MacPro7,1", ATTR{device/power_dpm_force_performance_level}="high"
+ACTION=="add|change", SUBSYSTEM=="drm", KERNEL=="card[0-9]*", DRIVERS=="amdgpu", ATTR{[dmi/id]product_name}=="iMacPro1,1", ATTR{device/power_dpm_force_performance_level}="high"
