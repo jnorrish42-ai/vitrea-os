@@ -1,0 +1,14 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [{ "Name": "Vitrea OS" }],
+        "Category": "Multimedia",
+        "Description": "A glass Now Playing card that appears only while music or video is playing",
+        "Icon": "media-playback-start",
+        "Id": "org.vitrea.music",
+        "License": "GPL-2.0-or-later",
+        "Name": "Vitrea Music",
+        "Version": "1.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

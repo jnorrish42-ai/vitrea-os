@@ -129,7 +129,7 @@ class Backend(QObject):
         if on:
             shell('desktops().forEach(function (d) { if (!d.widgets("%s").length) { var g = screenGeometry(d.screen); '
                   'if ("%s" == "org.vitrea.clock") d.addWidget("%s", g.width * 0.72, g.height * 0.16, g.width * 0.22, g.height * 0.40); '
-                  'else d.addWidget("%s", g.width * 0.03, g.height * 0.69, g.width * 0.24, g.height * 0.17); } });'
+                  'else d.addWidget("%s", g.width * 0.03, g.height * 0.70, Math.max(400, g.width * 0.25), Math.max(150, g.height * 0.17)); } });'
                   % (plugin, plugin, plugin, plugin))
         else:
             shell('desktops().forEach(function (d) { d.widgets("%s").forEach(function (w) { w.remove(); }); });' % plugin)

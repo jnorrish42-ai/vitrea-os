@@ -1,6 +1,8 @@
-out/
-work/
 *.iso
 *.pkg.tar.zst
-pkgbuilds/*/src/
+*.pyc
+__pycache__/
+out/
 pkgbuilds/*/pkg/
+pkgbuilds/*/src/
+work/

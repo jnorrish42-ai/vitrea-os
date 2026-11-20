@@ -51,7 +51,7 @@ Item {
     Image {
         id: wallpaper
         anchors.fill: parent
-        source: config.background || "file:///usr/share/wallpapers/Vitrea/contents/images_dark/3840x2160.png"
+        source: config.background || "file:///usr/share/wallpapers/VitreaDusk/contents/images/3840x2160.png"
         fillMode: Image.PreserveAspectCrop
         asynchronous: false
         smooth: true

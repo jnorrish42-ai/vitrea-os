@@ -5,6 +5,31 @@ plus [43PR's Hyprland dotfiles](https://github.com/43PR/dotfiles) as a second de
 
 ![Vitrea OS desktop](screenshots/desktop.png)
 
+## What's new: the Liquid update
+
+Arrives automatically on every Vitrea install (Discover → Updates). No reinstall needed.
+
+* **Real Liquid Glass**: the top bar, dock, menus and popups bend the light behind them
+  (refraction), with a specular rim, a soft light that follows your cursor, edge shading and
+  rounded "squircle" corners. Powered by the `kwin-effects-glass` KWin effect, which the Vitrea
+  repo rebuilds automatically whenever Arch updates KWin. On computers without graphics
+  acceleration (most VMs) Vitrea falls back to plain blur so the desktop stays smooth.
+* **Glass buttons** across the bar, popups and Vitrea's apps
+* **New logo**: the glass V, with no background tile
+* **Animated boot splash** ("Vitrea Liquid"): the logo rises out of the night, a halo breathes
+  behind it, a comet of light orbits it and petals drift up the screen, with a glass progress bar
+  (and a glass password field for encrypted disks). The same scene plays while Plasma loads.
+* **New wallpapers**: *Dusk* (a lone tree against a rose sunset, petals torn off by the wind) and
+  *Neon* (the same tree in electric cyan)
+* **Desktop widgets**: a big *Vitrea Clock* and a *Vitrea Music* card that only appears while
+  something is playing
+* **Fluid animations**: windows scale in and out, squash into the dock, workspaces slide
+* **Vitrea Style** app: Night / Dusk / Neon looks, accent colour, glass strength (clear, liquid,
+  frosted) and refraction, animation speed, minimise effect (squash or magic lamp), jelly
+  windows, dock position and widgets. Every change applies instantly.
+* **Launchpad** in the dock now opens the Overview (all windows + app search); the old dashboard
+  widget no longer exists in Plasma 6.8
+
 ## Two desktops, picked at the login screen
 
 | | **Plasma — Vitrea Night** (default) | **Hyprland (43PR)** |

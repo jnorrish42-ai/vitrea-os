@@ -291,7 +291,7 @@ ApplicationWindow {
                         GlassPill { icon: "preferences-system-time"; text: "Big clock"; selected: w.clock
                             onClicked: { w.clock = !w.clock; backend.setWidget("org.vitrea.clock", w.clock) } }
                         GlassPill { icon: "media-playback-start"; text: "Music"; selected: w.music
-                            onClicked: { w.music = !w.music; backend.setWidget("org.kde.plasma.mediacontroller", w.music) } }
+                            onClicked: { w.music = !w.music; backend.setWidget("org.vitrea.music", w.music) } }
                         QtObject { id: w; property bool clock: true; property bool music: true }
                     }
                 }

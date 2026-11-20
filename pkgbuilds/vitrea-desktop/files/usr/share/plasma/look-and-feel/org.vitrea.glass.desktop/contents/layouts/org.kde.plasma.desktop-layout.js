@@ -78,6 +78,6 @@ desktops().forEach(function (d) {
     var g = screenGeometry(d.screen);
     var cw = Math.round(g.width * 0.22), ch = Math.round(g.height * 0.40);
     var clockW = d.addWidget("org.vitrea.clock", g.width - cw - Math.round(g.width * 0.06), Math.round(g.height * 0.16), cw, ch);
-    var mw = Math.round(g.width * 0.24), mh = Math.round(g.height * 0.17);
-    var media = d.addWidget("org.kde.plasma.mediacontroller", Math.round(g.width * 0.03), g.height - mh - Math.round(g.height * 0.14), mw, mh);
+    var mw = Math.max(400, Math.round(g.width * 0.25)), mh = Math.max(150, Math.round(g.height * 0.17));
+    var media = d.addWidget("org.vitrea.music", Math.round(g.width * 0.03), g.height - mh - Math.round(g.height * 0.13), mw, mh);
 });
