@@ -1,0 +1,84 @@
+# Publishes the ISO parts stored (Git LFS) on the `downloads` branch as a GitHub release.
+# Runs when a tag like v1.0 is pushed, or by hand from the Actions tab.
+name: Release ISO
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag
+        default: v1.0
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ inputs.tag || github.ref_name }}
+      ISO: vitrea-os-t2-1.0-2026.11.20-x86_64.iso
+      ISO_SHA256: 34432d080750670e03a31e526e362ef7a5e0b4b8073f00b7d9d7b9bf06972916
+    steps:
+      - name: Get the ISO parts from the downloads branch
+        uses: actions/checkout@v4
+        with:
+          ref: downloads
+          lfs: true
+
+      - name: Check the parts join into the right ISO
+        run: |
+          ls -la "$ISO".part1 "$ISO".part2
+          sum=$(cat "$ISO".part1 "$ISO".part2 | sha256sum | cut -d' ' -f1)
+          echo "joined: $sum"
+          test "$sum" = "$ISO_SHA256"
+          echo "$ISO_SHA256  $ISO" > SHA256SUMS.txt
+
+      - name: Write release notes
+        run: |
+          cat > notes.md <<NOTES
+          ## Vitrea OS 1.0 "Vitrea Night" — T2 Mac edition
+
+          Arch-based, easy-to-use Linux with a dark riced KDE Plasma desktop and 43PR's Hyprland as a
+          second session, built for **Intel Macs with the T2 chip (2018–2020), including the 2019 Mac Pro**.
+
+          ### Download
+          GitHub limits release files to 2 GB, so the 3.3 GB ISO comes in two parts.
+          Download **both** \`.part1\` and \`.part2\` into the same folder, then join them.
+
+          **macOS / Linux** (Terminal):
+          \`\`\`bash
+          cat $ISO.part1 $ISO.part2 > $ISO
+          shasum -a 256 $ISO
+          \`\`\`
+
+          **Windows** (Command Prompt):
+          \`\`\`
+          copy /b $ISO.part1 + $ISO.part2 $ISO
+          certutil -hashfile $ISO SHA256
+          \`\`\`
+
+          The checksum must be \`$ISO_SHA256\`.
+
+          Then write the ISO to a USB stick (KDE ISO Image Writer, balenaEtcher or \`dd\`) and follow the
+          **T2 Macs** section of the [README](https://github.com/${{ github.repository }}#t2-macs-20182020-intel-macs-including-the-2019-mac-pro)
+          (Secure Boot must be turned off first).
+
+          ### Status
+          Built and tested in a virtual machine (live boot and installer). A VM can't emulate the T2 chip,
+          so keyboard, audio, Wi-Fi firmware, fans and the Mac Pro GPUs are not yet confirmed on real hardware.
+          NOTES
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$TAG" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$ISO".part1 "$ISO".part2 SHA256SUMS.txt --clobber -R "$GITHUB_REPOSITORY"
+          else
+            gh release create "$TAG" "$ISO".part1 "$ISO".part2 SHA256SUMS.txt \
+              --title "Vitrea OS 1.0 — T2 Mac edition" --notes-file notes.md -R "$GITHUB_REPOSITORY"
+          fi
