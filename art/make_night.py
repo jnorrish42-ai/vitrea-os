@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Vitrea Night: dark "riced" palette (Catppuccin Mocha-inspired) for Plasma, Konsole and friends.
-Usage: make_night.py AIROOTFS_DIR"""
+Usage: make_night.py ROOT_DIR   (normally pkgbuilds/vitrea-desktop/files)"""
 import os, sys
 
 PAL = dict(

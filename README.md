@@ -64,14 +64,16 @@ sudo ./build.sh --t2     # T2 Mac edition (see below)
 |---|---|
 | `archiso/` | the archiso profile (based on Arch's official `releng`) |
 | `archiso/packages.x86_64` | every package on the ISO |
-| `archiso/airootfs/` | files placed into the OS: themes, layout, Welcome app, installer config, 43PR dotfiles in `/etc/skel` |
-| `archiso/airootfs/usr/local/bin/vitrea-customize` | one-time build step: branding, colour schemes, services |
-| `archiso/airootfs/usr/lib/vitrea/make-glass-theme.py` | tints Plasma's Breeze panel/popup frames to the dark Vitrea Night palette (re-run by a pacman hook after Plasma updates) |
+| `archiso/airootfs/` | live-session and installer files: installer config, live user setup, 43PR dotfiles in `/etc/skel` |
+| `pkgbuilds/vitrea-desktop/` | Vitrea's look, apps and settings as an updatable package (see *Pushing updates*) |
+| `pkgbuilds/vitrea-t2/` | T2 Mac support as an updatable package |
+| `archiso/airootfs/usr/local/bin/vitrea-customize` | one-time build step: locale, services, live initramfs |
+| `pkgbuilds/vitrea-desktop/files/usr/lib/vitrea/make-glass-theme.py` | tints Plasma's Breeze panel/popup frames to the dark Vitrea Night palette (re-run by a pacman hook after Plasma updates) |
 | `archiso/airootfs/etc/calamares/` | installer configuration and branding |
 | `pkgbuilds/` | local builds of the AUR packages: calamares, mpvpaper, papirus-folders, ttf-tabler-icons |
 | `art/` | generators for the night blossom tree wallpaper (`make_tree.py`), the Vitrea Night palette for Plasma and Konsole (`make_night.py`), window decorations (`make_decoration.py`), logo and installer slides |
-| `archiso/airootfs/usr/share/sddm/themes/vitrea/` | the login screen (QML); preview it with `tools/preview-sddm.py` |
-| `t2/` | the T2 Mac edition: extra files, package swaps and `make-profile.sh`, which derives its profile from `archiso/` |
+| `pkgbuilds/vitrea-desktop/files/usr/share/sddm/themes/vitrea/` | the login screen (QML); preview it with `tools/preview-sddm.py` |
+| `t2/` | the T2 Mac edition: package swaps and `make-profile.sh`, which derives its profile from `archiso/` |
 | `tools/` | QEMU boot test with screenshots (`test-boot.sh`), plus helpers to type into and screenshot the VM |
 
 ### Updating the 43PR dotfiles
@@ -120,6 +122,36 @@ removing the bridge is the known workaround. The Afterburner card has no Linux d
 > The T2 edition is built and boot-tested in a VM, which can't emulate the T2 chip. Keyboard,
 > audio, Wi-Fi, fans and the Mac Pro GPUs need a real Mac to confirm; please report what works.
 > The t2linux packages are unsigned (`SigLevel = Never`, as in t2linux's own setup).
+
+## Pushing updates (no reinstall)
+
+Installed Vitrea systems update like any Arch system: **Discover → Updates** (or
+`sudo pacman -Syu`) brings Arch's updates *and* Vitrea's own, from the **Vitrea repo** that
+every install has in `/etc/pacman.conf`:
+
+```ini
+[vitrea]
+Server = https://github.com/jnorrish42-ai/vitrea-os/releases/download/repo
+```
+
+To ship a change:
+
+1. Edit Vitrea's files in **`pkgbuilds/vitrea-desktop/files/`** (theme, Welcome app, login
+   screen, wallpapers, Plasma defaults in `etc/xdg/`, …) or **`pkgbuilds/vitrea-t2/files/`**
+   (T2 Mac support). The folders mirror where the files go on the system.
+2. Commit and push to `main`.
+3. The **Publish Vitrea updates** workflow (GitHub → Actions) builds both packages with a new
+   version number and publishes them to the `repo` release. A few minutes later every Vitrea
+   install sees the update.
+
+After updating, `vitrea-apply` re-runs on each machine: it regenerates the colour schemes, the
+glass Plasma theme and the boot splash (rebuilding the boot image only if the splash changed).
+System-wide defaults (`/etc/xdg`) apply to everyone who hasn't changed that setting themselves;
+files copied into people's home folders at account creation (`/etc/skel`, e.g. the 43PR
+dotfiles) only affect new accounts.
+
+The repo is unsigned (`SigLevel = Optional TrustAll`), so anyone who can push to `main` can
+ship updates to every Vitrea install. Keep write access to this GitHub repo to yourself.
 
 ## Status and known limitations
 
