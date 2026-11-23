@@ -27,9 +27,14 @@ Arrives automatically on every Vitrea install (Discover → Updates). No reinsta
 * **Vitrea Style** app: Night / Dusk / Neon looks, accent colour, glass strength (clear, liquid,
   frosted) and refraction, animation speed, minimise effect (squash or magic lamp), jelly
   windows, dock position and widgets. Every change applies instantly.
-* **Vitrea Island**: the clock in the middle of the top bar is now a living black pill. When music
-  plays it springs wider with spinning cover art, the track name and dancing bars; click it for a
-  card with big art and glass play/skip buttons (or a big clock when nothing plays)
+* **Vitrea Island**: the clock in the middle of the top bar is now a living black pill.
+  * **Music**: when a song starts it opens wide (cover, title, waveform) for a few seconds, then
+    settles into a minimal pill (spinning cover + waveform). Click for a card with big cover art,
+    progress, and play/skip buttons.
+  * **Notifications** slide through it; **volume** and **brightness** changes show a level bar;
+    plugging in or unplugging shows **charging** status (and it warns at 20 % and 10 % battery).
+  * **Timers**: 1/5/10/25-minute timers from the card; the island counts down and chimes.
+  * Everything pops up briefly and then goes back to minimal; the card closes itself after 10 s.
 * **Yumeka Kuroha**, Vitrea's desktop companion: she stands in the corner of the desktop, greets
   you by time of day, reacts when you click her (peace, cheer, heart, curious… and a pout if you
   keep poking), and gets sleepy late at night. Toggle her in Vitrea Style.
