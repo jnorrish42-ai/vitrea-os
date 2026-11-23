@@ -1,0 +1,14 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [{ "Name": "Vitrea OS" }],
+        "Category": "Date and Time",
+        "Description": "A living pill in the top bar: the time, and whatever is playing. Click to expand.",
+        "Icon": "vitrea-logo",
+        "Id": "org.vitrea.island",
+        "License": "GPL-2.0-or-later",
+        "Name": "Vitrea Island",
+        "Version": "1.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

@@ -9,7 +9,7 @@ desktops().forEach(function (d) {
 
 function trySet(obj, key, value) { try { obj[key] = value; } catch (e) { print("skip " + key + ": " + e); } }
 
-// ---------- Top bar: menu + workspaces | clock | tray ----------
+// ---------- Top bar: menu + workspaces | Vitrea Island | tray ----------
 var top = new Panel;
 top.location = "top";
 top.height = Math.round(gridUnit * 1.7);
@@ -30,13 +30,8 @@ pager.writeConfig("wrapPage", true);
 
 top.addWidget("org.kde.plasma.panelspacer");
 
-var clock = top.addWidget("org.kde.plasma.digitalclock");
-clock.currentConfigGroup = ["Appearance"];
-clock.writeConfig("dateDisplayFormat", "BesideTime");
-clock.writeConfig("dateFormat", "custom");
-clock.writeConfig("customDateFormat", "ddd d MMM");
-clock.writeConfig("showSeconds", 0);
-clock.writeConfig("use24hFormat", 2);
+// Vitrea Island: the time, and whatever is playing (click to expand)
+top.addWidget("org.vitrea.island");
 
 top.addWidget("org.kde.plasma.panelspacer");
 top.addWidget("org.kde.plasma.systemtray");
