@@ -1,0 +1,14 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [{ "Name": "Vitrea OS" }],
+        "Category": "Fun and Games",
+        "Description": "Yumeka Kuroha, Vitrea's desktop companion. Click her!",
+        "Icon": "vitrea-logo",
+        "Id": "org.vitrea.yumeka",
+        "License": "CC-BY-SA-4.0",
+        "Name": "Yumeka",
+        "Version": "1.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

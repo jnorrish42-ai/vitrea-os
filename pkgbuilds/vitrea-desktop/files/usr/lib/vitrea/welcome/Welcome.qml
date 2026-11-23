@@ -54,6 +54,14 @@ ApplicationWindow {
                     Layout.fillWidth: true
                 }
             }
+            Item { Layout.fillWidth: true }
+            Image {   // Yumeka says hi
+                source: "file:///usr/share/pixmaps/vitrea-yumeka.png"
+                Layout.preferredHeight: 92
+                Layout.preferredWidth: 92 * sourceSize.width / Math.max(1, sourceSize.height)
+                fillMode: Image.PreserveAspectFit
+                smooth: true; mipmap: true
+            }
         }
 
         GridLayout {

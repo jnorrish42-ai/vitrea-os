@@ -126,6 +126,11 @@ class Backend(QObject):
 
     @pyqtSlot(str, bool)
     def setWidget(self, plugin, on):
+        if on and plugin == 'org.vitrea.yumeka':
+            shell('desktops().forEach(function (d) { if (!d.widgets("org.vitrea.yumeka").length) { var g = screenGeometry(d.screen); '
+                  'var yw = Math.max(300, g.width * 0.22), yh = Math.max(420, g.height * 0.40); '
+                  'd.addWidget("org.vitrea.yumeka", g.width - yw - g.width * 0.015, g.height - yh - g.height * 0.03, yw, yh); } });')
+            return
         if on:
             shell('desktops().forEach(function (d) { if (!d.widgets("%s").length) { var g = screenGeometry(d.screen); '
                   'if ("%s" == "org.vitrea.clock") d.addWidget("%s", g.width * 0.72, g.height * 0.16, g.width * 0.22, g.height * 0.40); '

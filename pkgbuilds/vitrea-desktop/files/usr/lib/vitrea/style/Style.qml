@@ -292,7 +292,9 @@ ApplicationWindow {
                             onClicked: { w.clock = !w.clock; backend.setWidget("org.vitrea.clock", w.clock) } }
                         GlassPill { icon: "media-playback-start"; text: "Music"; selected: w.music
                             onClicked: { w.music = !w.music; backend.setWidget("org.vitrea.music", w.music) } }
-                        QtObject { id: w; property bool clock: true; property bool music: true }
+                        GlassPill { icon: "vitrea-logo"; text: "Yumeka"; selected: w.yumeka
+                            onClicked: { w.yumeka = !w.yumeka; backend.setWidget("org.vitrea.yumeka", w.yumeka) } }
+                        QtObject { id: w; property bool clock: true; property bool music: true; property bool yumeka: true }
                     }
                 }
 

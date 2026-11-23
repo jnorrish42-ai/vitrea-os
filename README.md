@@ -27,6 +27,9 @@ Arrives automatically on every Vitrea install (Discover → Updates). No reinsta
 * **Vitrea Style** app: Night / Dusk / Neon looks, accent colour, glass strength (clear, liquid,
   frosted) and refraction, animation speed, minimise effect (squash or magic lamp), jelly
   windows, dock position and widgets. Every change applies instantly.
+* **Yumeka Kuroha**, Vitrea's desktop companion: she stands in the corner of the desktop, greets
+  you by time of day, reacts when you click her (peace, cheer, heart, curious… and a pout if you
+  keep poking), and gets sleepy late at night. Toggle her in Vitrea Style.
 * **Launchpad** in the dock now opens the Overview (all windows + app search); the old dashboard
   widget no longer exists in Plasma 6.8
 
@@ -206,5 +209,6 @@ Tested end to end in QEMU (UEFI, software rendering, 40 GB virtual disk):
 * **43PR/dotfiles** by 43PR (MIT): Hyprland/Quickshell desktop, zsh, kitty, rofi, theming
 * Glass Kvantum styles derived from Tsu Jan's KvMojave (GPLv3)
 * Vitrea logo, wallpapers and installer slides: original
+* Yumeka Kuroha: original character created for Vitrea by the project owner (`art/yumeka/`)
 
 Not affiliated with Arch Linux, KDE, 43PR or Apple.
