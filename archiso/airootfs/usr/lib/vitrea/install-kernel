@@ -1,0 +1,14 @@
+#!/bin/bash
+# Installer step: put the kernel into the new system's /boot. Taken from the unpacked system
+# itself (/usr/lib/modules/<ver>/vmlinuz), so it works whether the USB stick is still mounted
+# or the live image was copied into RAM. The file name follows the kernel package
+# (vmlinuz-linux, vmlinuz-linux-t2, ...), which is what mkinitcpio's presets expect.
+set -e
+ROOT=$1
+[ -d "$ROOT/usr/lib/modules" ] || { echo "no modules in $ROOT"; exit 1; }
+for k in "$ROOT"/usr/lib/modules/*/; do
+  [ -f "$k/vmlinuz" ] && [ -f "$k/pkgbase" ] || continue
+  install -Dm644 "$k/vmlinuz" "$ROOT/boot/vmlinuz-$(cat "$k/pkgbase")"
+  echo "installed vmlinuz-$(cat "$k/pkgbase")"
+done
+ls "$ROOT"/boot/vmlinuz-* >/dev/null

@@ -2,6 +2,12 @@
 # Creates the passwordless "live" user and enables auto-login. Only runs on the live ISO;
 # nothing here lands in the squashfs, so installed systems stay clean.
 grep -q archisobasedir /proc/cmdline || exit 0
+# The installer's copy source. When the USB boot copies the image into RAM (machines with lots of
+# memory, e.g. a Mac Pro) the stick is unmounted, so point at wherever the image actually is.
+mkdir -p /run/vitrea
+for img in /run/archiso/copytoram/airootfs.sfs /run/archiso/bootmnt/arch/x86_64/airootfs.sfs; do
+  if [ -e "$img" ]; then ln -sf "$img" /run/vitrea/airootfs.sfs; break; fi
+done
 id live >/dev/null 2>&1 || useradd -m -G wheel,audio,video,network,storage,lp -s /usr/bin/zsh -c "Vitrea Live" live
 passwd -d live >/dev/null
 echo 'live ALL=(ALL:ALL) NOPASSWD: ALL' > /etc/sudoers.d/99-live && chmod 440 /etc/sudoers.d/99-live

@@ -23,4 +23,5 @@ file_permissions=(
   ["/usr/local/bin/vitrea-customize"]="0:0:755"
   ["/usr/bin/vitrea-install"]="0:0:755"
   ["/usr/lib/vitrea/calamares-cleanup"]="0:0:755"
+  ["/usr/lib/vitrea/install-kernel"]="0:0:755"
 )
