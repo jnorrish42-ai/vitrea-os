@@ -4,7 +4,7 @@ iso_name="vitrea-os"
 iso_label="VITREA_$(date --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y%m)"
 iso_publisher="Vitrea OS"
 iso_application="Vitrea OS Live/Install"
-iso_version="1.0-$(date --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y.%m.%d)"
+iso_version="${VITREA_VERSION:-1.2}-$(date --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y.%m.%d)"
 install_dir="arch"
 buildmodes=('iso')
 bootmodes=('bios.syslinux' 'uefi.systemd-boot')
