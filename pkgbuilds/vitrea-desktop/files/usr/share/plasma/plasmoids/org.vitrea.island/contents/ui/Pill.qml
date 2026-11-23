@@ -54,8 +54,7 @@ Item {
                 width: body.height - 8; height: width; radius: width / 2
                 anchors.verticalCenter: parent.verticalCenter
                 color: Qt.rgba(pill.accent.r, pill.accent.g, pill.accent.b, 0.35)
-                clip: true
-                Image { anchors.fill: parent; source: pill.art; fillMode: Image.PreserveAspectCrop; visible: status === Image.Ready }
+                RoundedImage { anchors.fill: parent; radius: width / 2; source: pill.art }
                 Text { anchors.centerIn: parent; text: "♪"; color: "white"; font.pixelSize: parent.height * 0.6; visible: pill.art == "" }
                 RotationAnimation on rotation { from: 0; to: 360; duration: 9000; loops: Animation.Infinite; running: pill.playing }
             }

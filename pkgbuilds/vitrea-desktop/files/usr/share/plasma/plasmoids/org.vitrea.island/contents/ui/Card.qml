@@ -82,9 +82,9 @@ Item {
         RowLayout {
             spacing: 16
             Rectangle {
-                Layout.preferredWidth: 72; Layout.preferredHeight: 72; radius: 16
-                color: Qt.rgba(card.accent.r, card.accent.g, card.accent.b, 0.3); clip: true
-                Image { anchors.fill: parent; source: card.art; fillMode: Image.PreserveAspectCrop; visible: status === Image.Ready }
+                Layout.preferredWidth: 72; Layout.preferredHeight: 72; radius: 20
+                color: Qt.rgba(card.accent.r, card.accent.g, card.accent.b, 0.3)
+                RoundedImage { anchors.fill: parent; radius: 20; source: card.art }
                 Text { anchors.centerIn: parent; text: "♪"; color: "white"; font.pixelSize: 34; visible: card.art == "" }
             }
             ColumnLayout {
