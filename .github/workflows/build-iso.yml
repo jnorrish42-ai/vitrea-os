@@ -1,0 +1,84 @@
+# Builds the Vitrea OS ISO on GitHub's servers and publishes it as a release, split into
+# parts under GitHub's 2 GB per-file limit. Run it from the Actions tab (Run workflow).
+name: Build ISO
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag (e.g. v1.2)
+        required: true
+        default: v1.2
+      edition:
+        description: "Edition: t2 (Intel Macs with the T2 chip; also boots normal PCs) or standard"
+        required: true
+        default: t2
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - name: Make room on the runner (the ISO build needs ~20 GB)
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache /usr/local/share/boost
+          sudo docker image prune -af >/dev/null || true
+          df -h /
+
+      - uses: actions/checkout@v4
+
+      - name: Build the ISO in an Arch Linux container
+        run: |
+          flag=""; [ "${{ inputs.edition }}" = "t2" ] && flag="--t2"
+          sudo docker run --rm --privileged -v "$PWD:/src" -w /src archlinux:base-devel bash -euxo pipefail -c "
+            pacman-key --init
+            pacman -Syu --noconfirm --needed archiso git
+            WORK=/tmp/vitrea-work ./build.sh $flag
+          "
+          ls -la out/
+
+      - name: Split and checksum
+        run: |
+          sudo chown -R "$USER" out
+          cd out
+          iso=$(ls *.iso | head -1)
+          sha256sum "$iso" > SHA256SUMS.txt
+          split -b 1900M -d -a 1 --numeric-suffixes=1 "$iso" "$iso.part"
+          rm "$iso"
+          echo "ISO=$iso" >> "$GITHUB_ENV"
+          echo "SUM=$(cut -d' ' -f1 SHA256SUMS.txt)" >> "$GITHUB_ENV"
+          ls -la
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          cat > notes.md <<NOTES
+          ## Vitrea OS $TAG
+
+          Fixes the installer on computers with lots of memory (e.g. Mac Pro, MacBook Pro), where it
+          stopped with *"Bad unpackfs configuration … airootfs.sfs does not exist"*. Includes the Liquid
+          update (Liquid Glass, new logo, animated splash, Vitrea Style, Yumeka).
+
+          ### Download
+          Download **both** \`.part1\` and \`.part2\` into the same folder, then join them:
+
+          **macOS / Linux:**
+          \`\`\`bash
+          cat $ISO.part1 $ISO.part2 > $ISO
+          shasum -a 256 $ISO
+          \`\`\`
+          **Windows (Command Prompt):**
+          \`\`\`
+          copy /b $ISO.part1 + $ISO.part2 $ISO
+          certutil -hashfile $ISO SHA256
+          \`\`\`
+          The checksum must be \`$SUM\`. Then write the ISO to a USB stick (KDE ISO Image Writer,
+          balenaEtcher or \`dd\`). T2 Macs: see the README's "T2 Macs" section (Secure Boot off).
+          NOTES
+          gh release create "$TAG" out/*.part1 out/*.part2 out/SHA256SUMS.txt -R "$GITHUB_REPOSITORY" \
+            --title "Vitrea OS $TAG" --notes-file notes.md --latest
