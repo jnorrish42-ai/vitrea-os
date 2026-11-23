@@ -5,6 +5,7 @@ import org.kde.plasma.plasmoid
 import org.kde.plasma.core as PlasmaCore
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.private.mpris as Mpris
+import org.kde.kcmutils as KCMUtils
 
 PlasmoidItem {
     id: root
@@ -17,7 +18,10 @@ PlasmoidItem {
         && player.playbackStatus !== Mpris.PlaybackStatus.Stopped && (player.track || "") !== ""
     readonly property bool playing: active && player.playbackStatus === Mpris.PlaybackStatus.Playing
     property date now: new Date()
-    Timer { interval: 1000; running: true; repeat: true; triggeredOnStart: true; onTriggered: root.now = new Date() }
+    Timer {
+        interval: 1000; running: true; repeat: true; triggeredOnStart: true
+        onTriggered: { root.now = new Date(); if (root.playing && root.expanded) root.player.updatePosition() }
+    }
 
     compactRepresentation: Item {
         Layout.minimumWidth: pill.implicitWidth + 8
@@ -46,7 +50,10 @@ PlasmoidItem {
         artist: root.active ? (root.player.artist || root.player.identity || "") : ""
         art: root.active ? (root.player.artUrl || "") : ""
         now: root.now
+        position: root.active ? root.player.position / 1000000 : 0
+        length: root.active ? root.player.length / 1000000 : 0
         accent: Kirigami.Theme.highlightColor
+        onOutput: KCMUtils.KCMLauncher.openSystemSettings("kcm_pulseaudio")
         onPrevious: root.player.Previous()
         onPlayPause: root.player.PlayPause()
         onNext: root.player.Next()

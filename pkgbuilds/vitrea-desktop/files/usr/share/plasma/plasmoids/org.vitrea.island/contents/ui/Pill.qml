@@ -12,7 +12,7 @@ Item {
     property real barHeight: 28
     signal clicked
 
-    readonly property real wideWidth: Math.min(380, 132 + titleText.implicitWidth)
+    readonly property real wideWidth: Math.min(400, 150 + titleText.implicitWidth)
     implicitWidth: active ? wideWidth : timeLabel.implicitWidth + 34
     implicitHeight: barHeight
     Behavior on implicitWidth { SpringAnimation { spring: 3.2; damping: 0.32; epsilon: 0.25 } }
@@ -69,28 +69,11 @@ Item {
                 color: "#f4f4ff"
                 font.family: "Inter"; font.pixelSize: Math.round(pill.barHeight * 0.46); font.weight: Font.Medium
             }
-            Row {
+            Wave {
                 id: bars
                 anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter
-                spacing: 3
-                Repeater {
-                    model: 4
-                    Rectangle {
-                        required property int index
-                        width: 3; radius: 1.5
-                        anchors.verticalCenter: parent.verticalCenter
-                        color: pill.accent
-                        property real level: 0.35
-                        height: Math.max(3, body.height * 0.55 * level)
-                        SequentialAnimation on level {
-                            running: pill.playing; loops: Animation.Infinite
-                            NumberAnimation { to: 1.0; duration: 260 + index * 70; easing.type: Easing.InOutSine }
-                            NumberAnimation { to: 0.3 + index * 0.1; duration: 300 + index * 50; easing.type: Easing.InOutSine }
-                            NumberAnimation { to: 0.75; duration: 240 + index * 90; easing.type: Easing.InOutSine }
-                            NumberAnimation { to: 0.35; duration: 280; easing.type: Easing.InOutSine }
-                        }
-                    }
-                }
+                count: 7; barWidth: 3; maxHeight: body.height * 0.62
+                running: pill.playing; accent: pill.accent
             }
         }
         MouseArea { id: area; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: pill.clicked() }
