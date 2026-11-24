@@ -1,0 +1,11 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = plasma-desktop
+Target = vitrea-desktop
+
+[Action]
+Description = Setting up the Vitrea lock screen...
+When = PostTransaction
+Exec = /usr/lib/vitrea/lockscreen-install

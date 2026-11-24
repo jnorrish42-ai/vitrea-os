@@ -1,5 +1,5 @@
 // Vitrea Liquid default desktop: slim glass top bar, floating glass dock, big clock + music widget.
-var wallpaper = "file:///usr/share/wallpapers/VitreaDusk/";
+var wallpaper = "file:///usr/share/wallpapers/summer_1am/";
 
 desktops().forEach(function (d) {
     d.wallpaperPlugin = "org.kde.image";

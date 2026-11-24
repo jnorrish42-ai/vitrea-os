@@ -154,9 +154,10 @@ ApplicationWindow {
                     RowLayout {
                         spacing: 12
                         Repeater {
-                            model: [{ id: "night", name: "Night", accent: "#cba6f7" },
-                                    { id: "dusk", name: "Dusk", accent: "#f5a3b8" },
-                                    { id: "neon", name: "Neon", accent: "#22d3ee" }]
+                            model: [{ id: "lake", name: "Lake", accent: "#b4a7f5" },
+                                    { id: "mist", name: "Mist", accent: "#89b4fa" },
+                                    { id: "forest", name: "Forest", accent: "#a6e3a1" },
+                                    { id: "ember", name: "Ember", accent: "#fab387" }]
                             GlassPill {
                                 required property var modelData
                                 text: modelData.name

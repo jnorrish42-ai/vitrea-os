@@ -5,7 +5,17 @@ plus [43PR's Hyprland dotfiles](https://github.com/43PR/dotfiles) as a second de
 
 ![Vitrea OS desktop](screenshots/desktop.png)
 
-## What's new: the Liquid update
+## What's new: real photos, new lock and login screens
+
+* **Real photographs** instead of generated wallpapers. The default is *summer 1am*, a lake at dusk
+  by Risto Saukonpää; Vitrea Style offers **Lake**, **Mist**, **Forest** and **Ember**, all from
+  KDE's wallpaper collection (`plasma-workspace-wallpapers`).
+* **New lock screen**: the photo with a large clock while idle; start typing and it softly blurs
+  behind your picture, name and one password field. Built on KDE's own lock screen logic, and if
+  it ever fails to load, KDE's standard lock screen appears instead, so you can't get locked out.
+* **New login screen** to match.
+
+## The Liquid update
 
 Arrives automatically on every Vitrea install (Discover → Updates). No reinstall needed.
 
@@ -19,12 +29,10 @@ Arrives automatically on every Vitrea install (Discover → Updates). No reinsta
 * **Animated boot splash** ("Vitrea Liquid"): the logo rises out of the night, a halo breathes
   behind it, a comet of light orbits it and petals drift up the screen, with a glass progress bar
   (and a glass password field for encrypted disks). The same scene plays while Plasma loads.
-* **New wallpapers**: *Dusk* (a lone tree against a rose sunset, petals torn off by the wind) and
-  *Neon* (the same tree in electric cyan)
 * **Desktop widgets**: a big *Vitrea Clock* and a *Vitrea Music* card that only appears while
   something is playing
 * **Fluid animations**: windows scale in and out, squash into the dock, workspaces slide
-* **Vitrea Style** app: Night / Dusk / Neon looks, accent colour, glass strength (clear, liquid,
+* **Vitrea Style** app: wallpaper looks, accent colour, glass strength (clear, liquid,
   frosted) and refraction, animation speed, minimise effect (squash or magic lamp), jelly
   windows, dock position and widgets. Every change applies instantly.
 * **Vitrea Island**: the clock in the middle of the top bar is now a living black pill.
@@ -216,7 +224,9 @@ Tested end to end in QEMU (UEFI, software rendering, 40 GB virtual disk):
 * **t2linux** (linux-t2 kernel, t2bce, audio config, firmware fetcher, t2fanrd, tiny-dfr) for the T2 Mac edition
 * **43PR/dotfiles** by 43PR (MIT): Hyprland/Quickshell desktop, zsh, kitty, rofi, theming
 * Glass Kvantum styles derived from Tsu Jan's KvMojave (GPLv3)
-* Vitrea logo, wallpapers and installer slides: original
+* Wallpapers: KDE's photo collection (`plasma-workspace-wallpapers`, LGPLv3 / CC-BY-SA-4.0); *summer 1am* by Risto Saukonpää
+* Lock screen logic from KDE plasma-desktop (GPL-2.0-or-later)
+* Vitrea logo and installer slides: original
 * Yumeka Kuroha: original character created for Vitrea by the project owner (`art/yumeka/`)
 
 Not affiliated with Arch Linux, KDE, 43PR or Apple.

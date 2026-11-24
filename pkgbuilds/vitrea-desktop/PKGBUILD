@@ -7,7 +7,7 @@ pkgdesc="Vitrea OS look, apps and settings: theme, Welcome app, login screen, bo
 arch=(any)
 url="https://github.com/jnorrish42-ai/vitrea-os"
 license=(custom)
-depends=(plasma-workspace sddm plymouth python python-pyqt6 kirigami kwin-effects-glass)
+depends=(plasma-workspace plasma-desktop plasma-workspace-wallpapers inter-font sddm plymouth python python-pyqt6 kirigami kwin-effects-glass)
 install=vitrea-desktop.install
 
 package() {

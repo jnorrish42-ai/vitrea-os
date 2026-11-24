@@ -1,0 +1,30 @@
+#!/bin/sh
+# Puts Vitrea's lock screen in place (or takes it out again with "remove").
+#
+# KDE keeps the lock screen inside plasma-desktop's shell package, so Vitrea swaps in its own
+# LockScreen.qml there (a small loader that falls back to KDE's lock screen if Vitrea's fails).
+# Re-run by a pacman hook whenever plasma-desktop or vitrea-desktop is updated. Only done on
+# Plasma versions Vitrea's lock screen was tested with; on anything newer KDE's is left alone.
+TESTED="6.8"
+dir=/usr/share/plasma/shells/org.kde.plasma.desktop/contents/lockscreen
+ours=/usr/share/vitrea/lockscreen/LockScreen.qml
+
+restore() {
+    if [ -f "$dir/LockScreen.qml.kde" ]; then
+        mv -f "$dir/LockScreen.qml.kde" "$dir/LockScreen.qml"
+    fi
+}
+
+[ -d "$dir" ] || exit 0
+if [ "$1" = remove ]; then restore; exit 0; fi
+
+ver=$(pacman -Q plasma-desktop 2>/dev/null | awk '{print $2}')
+case "$ver" in
+    "$TESTED".*|"$TESTED"-*) ;;
+    *) echo "vitrea: Plasma $ver is newer than the Vitrea lock screen; using KDE's"; restore; exit 0 ;;
+esac
+
+if ! grep -q "Vitrea:" "$dir/LockScreen.qml" 2>/dev/null; then
+    cp -f "$dir/LockScreen.qml" "$dir/LockScreen.qml.kde"   # fresh copy from plasma-desktop
+fi
+cp -f "$ours" "$dir/LockScreen.qml"

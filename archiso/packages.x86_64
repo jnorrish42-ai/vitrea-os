@@ -81,6 +81,7 @@ open-vm-tools
 hyperv
 ## ---------- KDE Plasma (Vitrea Glass, default session) ----------
 plasma-desktop
+plasma-workspace-wallpapers
 plasma-workspace
 kwin
 sddm

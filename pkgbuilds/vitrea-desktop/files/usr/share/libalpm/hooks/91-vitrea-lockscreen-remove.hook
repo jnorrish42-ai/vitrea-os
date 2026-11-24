@@ -1,0 +1,9 @@
+[Trigger]
+Operation = Remove
+Type = Package
+Target = vitrea-desktop
+
+[Action]
+Description = Restoring KDE's lock screen...
+When = PreTransaction
+Exec = /usr/lib/vitrea/lockscreen-install remove

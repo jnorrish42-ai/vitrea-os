@@ -58,7 +58,7 @@ sddm = Sddm()
 users = Model(['name', 'realName', 'icon', 'homeDir'], [['live', 'Vitrea Live', '', '/home/live']], 0)
 sessions = Model(['name', 'file', 'comment'], [['Plasma (Wayland)', 'plasma.desktop', ''], ['Hyprland (43PR)', '43pr-hyprland.desktop', '']], 0)
 config = QQmlPropertyMap()
-bg = os.environ.get('BG', os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'pkgbuilds', 'vitrea-desktop', 'files', 'usr/share/wallpapers/Vitrea/contents/images/3840x2160.png'))
+bg = os.environ.get('BG', os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'pkgbuilds', 'vitrea-desktop', 'files', 'usr/share/wallpapers/summer_1am/contents/images/2560x1600.jpg'))
 config.insert('background', 'file://' + bg)
 ctx = view.rootContext()
 for k, v in (('sddm', sddm), ('userModel', users), ('sessionModel', sessions), ('config', config)):

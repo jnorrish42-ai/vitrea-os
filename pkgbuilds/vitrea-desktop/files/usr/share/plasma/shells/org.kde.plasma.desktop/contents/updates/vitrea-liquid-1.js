@@ -30,12 +30,12 @@ panels().forEach(function (panel) {
     });
 });
 
-// desktop: Dusk wallpaper (if still on a Vitrea default) + clock and the Now Playing card
+// desktop: default photo wallpaper (if still on a Vitrea default) + clock and the Now Playing card
 desktops().forEach(function (d) {
     d.currentConfigGroup = ["Wallpaper", "org.kde.image", "General"];
     var img = String(d.readConfig("Image", ""));
     if (img === "" || img.indexOf("/usr/share/wallpapers/Vitrea/") >= 0 || img === "Vitrea") {
-        d.writeConfig("Image", "file:///usr/share/wallpapers/VitreaDusk/");
+        d.writeConfig("Image", "file:///usr/share/wallpapers/summer_1am/");
     }
     var have = {};
     d.widgets().forEach(function (w) { have[w.type] = true; });

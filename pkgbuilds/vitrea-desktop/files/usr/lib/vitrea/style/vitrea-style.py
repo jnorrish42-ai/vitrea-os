@@ -9,10 +9,11 @@ from PyQt6.QtGui import QGuiApplication, QIcon
 from PyQt6.QtQml import QQmlApplicationEngine
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-PRESETS = {  # wallpaper package, accent colour
-    'night': ('/usr/share/wallpapers/Vitrea', '#cba6f7'),
-    'dusk': ('/usr/share/wallpapers/VitreaDusk', '#f5a3b8'),
-    'neon': ('/usr/share/wallpapers/VitreaNeon', '#22d3ee'),
+PRESETS = {  # wallpaper (photos from KDE's plasma-workspace-wallpapers), accent colour
+    'lake': ('/usr/share/wallpapers/summer_1am', '#b4a7f5'),
+    'mist': ('/usr/share/wallpapers/DarkestHour', '#89b4fa'),
+    'forest': ('/usr/share/wallpapers/Path', '#a6e3a1'),
+    'ember': ('/usr/share/wallpapers/FallenLeaf', '#fab387'),
 }
 GLASS_THEMES = {'clear': 'vitrea-liquid-clear', 'liquid': 'vitrea-liquid', 'frosted': 'vitrea-liquid-frosted'}
 SPEEDS = {'snappy': '0.55', 'fluid': '1.0', 'relaxed': '1.5'}
@@ -77,6 +78,9 @@ class Backend(QObject):
     def setPreset(self, name):
         wall, accent = PRESETS[name]
         run('plasma-apply-wallpaperimage', wall)
+        # the lock screen uses the same photo
+        run('kwriteconfig6', '--file', 'kscreenlockerrc', '--group', 'Greeter', '--group', 'Wallpaper',
+            '--group', 'org.kde.image', '--group', 'General', '--key', 'Image', 'file://' + wall + '/')
         self.setAccent(accent)
 
     @pyqtSlot(str)
