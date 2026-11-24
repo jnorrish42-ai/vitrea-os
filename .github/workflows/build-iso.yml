@@ -61,11 +61,15 @@ jobs:
           cat > notes.md <<NOTES
           ## Vitrea OS $TAG
 
-          - **Vitrea Island** in the top bar: music (opens wide, then settles to minimal), notifications,
-            volume and brightness, charging status, and quick timers; click it for the full player
-          - Liquid Glass, the glass V logo, animated boot splash, Vitrea Style, Yumeka
-          - Fixes the installer on computers with lots of memory (e.g. Mac Pro, MacBook Pro), where it
-            stopped with *"Bad unpackfs configuration … airootfs.sfs does not exist"*
+          - **A calmer look**: real photo wallpapers, neutral grey colours with one accent from the
+            wallpaper, plain window buttons, solid menus, new lock and login screens, a quiet boot splash
+          - **Undo an update**: installs use btrfs and save a snapshot before every update; pick an
+            earlier version from the boot menu if an update breaks something
+          - Boot menu lists other systems (Windows, Arch) and starts Vitrea after 5 seconds
+          - Macs: Cmd works like Ctrl, Touch Bar and fan settings in Vitrea Style, pinch for all windows
+          - Clipboard history (Meta+V), screenshots to Pictures/Screenshots (Meta+Shift+S), drop-down
+            terminal (F12), KDE Connect, night light, Vitrea Island in the top bar
+          - Fixes the installer on computers with lots of memory (e.g. Mac Pro, MacBook Pro)
 
           ### Download
           Download **both** \`.part1\` and \`.part2\` into the same folder, then join them:
