@@ -30,7 +30,7 @@ panels().forEach(function (panel) {
     });
 });
 
-// desktop: default photo wallpaper (if still on a Vitrea default) + clock and the Now Playing card
+// desktop: default photo wallpaper (if still on a Vitrea default) + the Now Playing card
 desktops().forEach(function (d) {
     d.currentConfigGroup = ["Wallpaper", "org.kde.image", "General"];
     var img = String(d.readConfig("Image", ""));
@@ -40,10 +40,6 @@ desktops().forEach(function (d) {
     var have = {};
     d.widgets().forEach(function (w) { have[w.type] = true; });
     var g = screenGeometry(d.screen);
-    if (!have["org.vitrea.clock"]) {
-        var cw = Math.round(g.width * 0.22), ch = Math.round(g.height * 0.40);
-        d.addWidget("org.vitrea.clock", g.width - cw - Math.round(g.width * 0.06), Math.round(g.height * 0.16), cw, ch);
-    }
     if (!have["org.vitrea.music"]) {
         var mw = Math.max(400, Math.round(g.width * 0.25)), mh = Math.max(150, Math.round(g.height * 0.17));
         d.addWidget("org.vitrea.music", Math.round(g.width * 0.03), g.height - mh - Math.round(g.height * 0.13), mw, mh);

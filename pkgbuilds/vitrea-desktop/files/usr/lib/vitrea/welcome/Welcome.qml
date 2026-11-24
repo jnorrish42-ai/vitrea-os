@@ -1,138 +1,130 @@
+// Vitrea Welcome: three steps, in the system's own style.
 import QtQuick
-import QtQuick.Controls
+import QtQuick.Controls as QQC2
 import QtQuick.Layouts
-import QtQuick.Window
 import org.kde.kirigami as Kirigami
 
-ApplicationWindow {
+QQC2.ApplicationWindow {
     id: win
-    width: 760
+    width: 640
     height: 560
-    minimumWidth: 640
-    minimumHeight: 500
+    minimumWidth: 520
+    minimumHeight: 480
     visible: true
-    title: "Welcome to Vitrea OS"
+    title: "Welcome to Vitrea"
 
-    readonly property bool dark: backend.darkMode
-    readonly property color ink: dark ? "#cdd6f4" : "#14182a"
-    readonly property color subInk: dark ? "#a6adc8" : "#4a5370"
-    readonly property color glass: dark ? "#313244" : "#99ffffff"
-    readonly property color glassHover: dark ? "#45475a" : "#ccffffff"
-    readonly property color accent: dark ? "#cba6f7" : "#2f7cf6"
-
-    // Liquid background (blurred wallpaper look) behind a frosted card
-    Rectangle {
-        anchors.fill: parent
-        radius: 0
-        gradient: Gradient {
-            orientation: Gradient.Horizontal
-            GradientStop { position: 0.0; color: win.dark ? "#ff181825" : "#ffcfe0ff" }
-            GradientStop { position: 0.5; color: win.dark ? "#ff1e1e2e" : "#ffeedcff" }
-            GradientStop { position: 1.0; color: win.dark ? "#ff181825" : "#ffc8f3ff" }
+    component Step: RowLayout {
+        property int number
+        property string heading
+        property string detail
+        property alias buttonText: action.text
+        property alias buttonIcon: action.icon.name
+        signal triggered
+        Layout.fillWidth: true
+        spacing: Kirigami.Units.largeSpacing
+        Rectangle {
+            Layout.alignment: Qt.AlignTop
+            implicitWidth: Kirigami.Units.gridUnit * 1.6; implicitHeight: implicitWidth
+            radius: width / 2
+            color: "transparent"
+            border.color: Kirigami.Theme.disabledTextColor
+            QQC2.Label { anchors.centerIn: parent; text: number; font.weight: Font.DemiBold }
         }
+        ColumnLayout {
+            Layout.fillWidth: true
+            spacing: 2
+            QQC2.Label { text: heading; font.weight: Font.DemiBold; font.pointSize: Kirigami.Theme.defaultFont.pointSize + 1 }
+            QQC2.Label { Layout.fillWidth: true; visible: detail !== ""; text: detail; wrapMode: Text.WordWrap; color: Kirigami.Theme.disabledTextColor }
+        }
+        QQC2.Button { id: action; visible: text !== ""; Layout.alignment: Qt.AlignTop; onClicked: parent.triggered() }
+    }
+    component Link: QQC2.Label {
+        property string action
+        text: "<a href='#'>" + linkText + "</a>"
+        property string linkText
+        textFormat: Text.StyledText
+        onLinkActivated: backend.run(action)
+        HoverHandler { cursorShape: Qt.PointingHandCursor }
     }
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 32
-        spacing: 18
+        anchors.margins: Kirigami.Units.gridUnit * 1.5
+        spacing: Kirigami.Units.gridUnit
 
         RowLayout {
-            spacing: 18
-            Kirigami.Icon {
-                source: "vitrea-logo"
-                fallback: "file:///usr/share/pixmaps/vitrea-logo.png"
-                Layout.preferredWidth: 72; Layout.preferredHeight: 72
-            }
+            spacing: Kirigami.Units.largeSpacing
+            Kirigami.Icon { source: "vitrea-logo"; fallback: "file:///usr/share/pixmaps/vitrea-logo.png"; implicitWidth: Kirigami.Units.iconSizes.huge; implicitHeight: implicitWidth }
             ColumnLayout {
                 spacing: 2
-                Label { text: "Welcome to Vitrea OS"; font.pixelSize: 30; font.weight: Font.DemiBold; color: win.ink }
-                Label {
-                    text: backend.live ? "You're trying Vitrea from a USB stick. Nothing is changed on your computer until you install."
-                                       : "Everything you need to get started, in one place."
-                    color: win.subInk; font.pixelSize: 14; wrapMode: Text.WordWrap
+                Kirigami.Heading { text: "Welcome to Vitrea"; level: 1 }
+                QQC2.Label {
                     Layout.fillWidth: true
-                }
-            }
-            Item { Layout.fillWidth: true }
-            Image {   // Yumeka says hi
-                source: "file:///usr/share/pixmaps/vitrea-yumeka.png"
-                Layout.preferredHeight: 92
-                Layout.preferredWidth: 92 * sourceSize.width / Math.max(1, sourceSize.height)
-                fillMode: Image.PreserveAspectFit
-                smooth: true; mipmap: true
-            }
-        }
-
-        GridLayout {
-            columns: 3
-            rowSpacing: 14
-            columnSpacing: 14
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-
-            Repeater {
-                model: [
-                    { act: "install",  icon: "system-software-install", title: "Install Vitrea",   desc: "Put Vitrea on this computer. Takes about 10 minutes.", live: true },
-                    { act: "apps",     icon: "plasmadiscover",          title: "Get Apps",         desc: "Browse thousands of free apps in Discover.", live: false },
-                    { act: "hyprland", icon: "preferences-system-windows", title: "Try Hyprland",   desc: "Log out, then pick Hyprland (43PR) on the login screen.", live: false },
-                    { act: "macwifi",  icon: "network-wireless-hotspot", title: "Mac Wi-Fi Setup", desc: "Copy your Mac's Wi-Fi and Bluetooth firmware from macOS.", live: false, t2: true },
-                    { act: "wifi",     icon: "network-wireless",        title: "Connect to Wi-Fi", desc: "Join a wireless network.", live: false },
-                    { act: "display",  icon: "video-display",           title: "Displays",         desc: "Screen size, scaling and night light.", live: false },
-                    { act: "updates",  icon: "update-none",             title: "Updates",          desc: "Keep your system safe and up to date.", live: false },
-                    { act: "style",    icon: "vitrea-logo",             title: "Vitrea Style",     desc: "Wallpaper, accent colour, Liquid Glass, animations and widgets.", live: false },
-                    { act: "settings", icon: "preferences-system",      title: "All Settings",     desc: "Personalise everything else.", live: false }
-                ].filter(function (m) { return (backend.live || !m.live) && (backend.appleT2 || !m.t2) })
-
-                delegate: Rectangle {
-                    required property var modelData
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    Layout.minimumHeight: 96
-                    radius: 18
-                    color: area.containsMouse ? win.glassHover : win.glass
-                    border.color: modelData.act === "install" ? win.accent : (win.dark ? "#45475a" : "#b0ffffff")
-                    border.width: modelData.act === "install" ? 2 : 1
-                    Behavior on color { ColorAnimation { duration: 120 } }
-                    scale: area.pressed ? 0.97 : 1.0
-                    Behavior on scale { NumberAnimation { duration: 90 } }
-
-                    ColumnLayout {
-                        anchors.fill: parent
-                        anchors.margins: 14
-                        spacing: 4
-                        Kirigami.Icon {
-                            source: modelData.icon
-                            Layout.preferredWidth: 32; Layout.preferredHeight: 32
-                        }
-                        Label { text: modelData.title; color: win.ink; font.pixelSize: 15; font.weight: Font.DemiBold }
-                        Label { text: modelData.desc; color: win.subInk; font.pixelSize: 12; wrapMode: Text.WordWrap; Layout.fillWidth: true }
-                    }
-                    MouseArea {
-                        id: area
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: backend.run(modelData.act)
-                    }
+                    wrapMode: Text.WordWrap
+                    color: Kirigami.Theme.disabledTextColor
+                    text: backend.live ? "You're running Vitrea from the USB stick. Nothing on this computer changes until you install it."
+                                       : "Three things to get you started."
                 }
             }
         }
+
+        Kirigami.Separator { Layout.fillWidth: true }
+
+        Step {
+            number: 1
+            heading: "Connect to the internet"
+            detail: backend.appleT2 ? "Wi-Fi or a cable. On a Mac, Wi-Fi first needs a one-time setup that copies the Wi-Fi driver files from macOS or the internet."
+                                    : "Wi-Fi or a cable. You need it for updates and new apps."
+            buttonText: "Wi-Fi Settings"
+            buttonIcon: "network-wireless"
+            onTriggered: backend.run("wifi")
+        }
+        QQC2.Button {
+            visible: backend.appleT2
+            Layout.leftMargin: Kirigami.Units.gridUnit * 2.6
+            text: "Set Up Mac Wi-Fi"
+            icon.name: "network-wireless-hotspot"
+            onClicked: backend.run("macwifi")
+        }
+
+        Step {
+            number: 2
+            heading: backend.live ? "Install Vitrea" : "Get the latest updates"
+            detail: backend.live ? "Takes about 10 minutes. You can keep another system, like Windows or Arch, and choose between them when the computer starts."
+                                 : "Updates also arrive on their own, in Discover. If one ever causes trouble, an earlier version can be started from the boot menu."
+            buttonText: backend.live ? "Install…" : "Updates"
+            buttonIcon: backend.live ? "system-installer" : "update-none"
+            onTriggered: backend.run(backend.live ? "install" : "updates")
+        }
+
+        Step {
+            number: 3
+            heading: "Explore"
+            detail: ""
+        }
+        ColumnLayout {
+            Layout.leftMargin: Kirigami.Units.gridUnit * 2.6
+            Layout.topMargin: -Kirigami.Units.largeSpacing
+            spacing: Kirigami.Units.smallSpacing
+            Link { linkText: "Get apps"; action: "apps" }
+            Link { linkText: "Change the wallpaper, colours and more (Vitrea Style)"; action: "style" }
+            Link { linkText: "Screen size and night light"; action: "display" }
+            Link { linkText: "Try the Hyprland desktop: log out, then choose it at the bottom left of the login screen"; action: "hyprland" }
+            Link { linkText: "All settings"; action: "settings" }
+        }
+
+        Item { Layout.fillHeight: true }
 
         RowLayout {
             Layout.fillWidth: true
-            spacing: 10
-            Label { text: "Appearance:"; color: win.ink; font.pixelSize: 13 }
-            Button { text: "☀  Light"; onClicked: backend.run("light") }
-            Button { text: "☾  Dark"; onClicked: backend.run("dark") }
-            Item { Layout.fillWidth: true }
-            CheckBox {
-                text: "Show at startup"
+            QQC2.CheckBox {
+                text: "Show when I log in"
                 checked: backend.showAtStartup
                 visible: !backend.live
                 onToggled: backend.setShowAtStartup(checked)
             }
-            Button { text: "Let's go"; highlighted: true; onClicked: Qt.quit() }
+            Item { Layout.fillWidth: true }
+            QQC2.Button { text: "Close"; onClicked: Qt.quit() }
         }
     }
 }

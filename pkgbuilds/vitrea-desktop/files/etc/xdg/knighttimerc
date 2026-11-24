@@ -1,0 +1,8 @@
+[General]
+# night light follows fixed times (no location service needed)
+Source=Times
+
+[Times]
+SunsetStart=19:00:00
+SunriseStart=06:30:00
+TransitionDuration=2700

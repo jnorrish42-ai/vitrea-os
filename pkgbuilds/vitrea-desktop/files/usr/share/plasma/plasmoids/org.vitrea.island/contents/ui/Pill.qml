@@ -85,7 +85,7 @@ Item {
                 id: timeLabel
                 anchors.centerIn: parent
                 text: pill.timeText
-                color: "#f4f4ff"; font.family: "Inter"; font.pixelSize: pill.fontPx; font.weight: Font.DemiBold
+                color: "#f4f4f5"; font.family: "Inter"; font.pixelSize: pill.fontPx; font.weight: Font.DemiBold
             }
         }
 
@@ -110,7 +110,7 @@ Item {
                 elide: Text.ElideRight
                 opacity: pill.mode === "musicWide" ? 1 : 0
                 Behavior on opacity { NumberAnimation { duration: 180 } }
-                color: "#f4f4ff"; font.family: "Inter"; font.pixelSize: pill.fontPx - 1; font.weight: Font.Medium
+                color: "#f4f4f5"; font.family: "Inter"; font.pixelSize: pill.fontPx - 1; font.weight: Font.Medium
             }
             Wave {
                 id: wave
@@ -164,7 +164,7 @@ Item {
                 id: doneLabel
                 anchors.left: bell.right; anchors.leftMargin: pill.h * 0.3; anchors.verticalCenter: parent.verticalCenter
                 text: "Time's up"
-                color: "#f4f4ff"; font.family: "Inter"; font.pixelSize: pill.fontPx; font.weight: Font.DemiBold
+                color: "#f4f4f5"; font.family: "Inter"; font.pixelSize: pill.fontPx; font.weight: Font.DemiBold
             }
         }
 
@@ -189,8 +189,8 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 elide: Text.ElideRight
                 textFormat: Text.StyledText
-                text: "<b>" + (pill.notifInfo.title || pill.notifInfo.app || "") + "</b>" + ((pill.notifInfo.body || "") !== "" ? "  <font color='#a9aed0'>" + pill.notifInfo.body + "</font>" : "")
-                color: "#f4f4ff"; font.family: "Inter"; font.pixelSize: pill.fontPx - 1
+                text: "<b>" + (pill.notifInfo.title || pill.notifInfo.app || "") + "</b>" + ((pill.notifInfo.body || "") !== "" ? "  <font color='#ababb0'>" + pill.notifInfo.body + "</font>" : "")
+                color: "#f4f4f5"; font.family: "Inter"; font.pixelSize: pill.fontPx - 1
             }
         }
 
@@ -214,7 +214,7 @@ Item {
                     height: parent.height; radius: parent.radius
                     width: parent.width * Math.max(0, Math.min(1, pill.lvlInfo.muted ? 0 : (pill.lvlInfo.level || 0)))
                     Behavior on width { SpringAnimation { spring: 4; damping: 0.4; epsilon: 0.25 } }
-                    color: "#f4f4ff"
+                    color: "#f4f4f5"
                 }
             }
             Text {
@@ -222,7 +222,7 @@ Item {
                 anchors.right: parent.right; anchors.rightMargin: pill.h * 0.45; anchors.verticalCenter: parent.verticalCenter
                 width: pill.h * 1.3; horizontalAlignment: Text.AlignRight
                 text: pill.lvlInfo.muted ? "Off" : Math.round((pill.lvlInfo.level || 0) * 100) + "%"
-                color: "#a9aed0"; font.family: "Inter"; font.pixelSize: pill.fontPx - 2; font.weight: Font.DemiBold
+                color: "#ababb0"; font.family: "Inter"; font.pixelSize: pill.fontPx - 2; font.weight: Font.DemiBold
                 font.features: { "tnum": 1 }
             }
         }
@@ -236,14 +236,14 @@ Item {
                 width: pill.h * 0.64; height: width
                 kind: pill.chargeInfo.plugged ? "bolt" : "battery"
                 fill: (pill.chargeInfo.percent || 0) / 100
-                color: pill.chargeInfo.plugged ? "#7ee787" : ((pill.chargeInfo.percent || 0) <= 20 ? "#ff6b6b" : "#f4f4ff")
+                color: pill.chargeInfo.plugged ? "#7ee787" : ((pill.chargeInfo.percent || 0) <= 20 ? "#ff6b6b" : "#f4f4f5")
             }
             Text {
                 id: chargeLabel
                 anchors.left: chargeIcon.right; anchors.leftMargin: pill.h * 0.3; anchors.verticalCenter: parent.verticalCenter
                 textFormat: Text.StyledText
-                text: (pill.chargeInfo.plugged ? "Charging" : "On battery") + "  <font color='" + (pill.chargeInfo.plugged ? "#7ee787" : "#a9aed0") + "'>" + (pill.chargeInfo.percent || 0) + "%</font>"
-                color: "#f4f4ff"; font.family: "Inter"; font.pixelSize: pill.fontPx; font.weight: Font.DemiBold
+                text: (pill.chargeInfo.plugged ? "Charging" : "On battery") + "  <font color='" + (pill.chargeInfo.plugged ? "#7ee787" : "#ababb0") + "'>" + (pill.chargeInfo.percent || 0) + "%</font>"
+                color: "#f4f4f5"; font.family: "Inter"; font.pixelSize: pill.fontPx; font.weight: Font.DemiBold
             }
         }
 

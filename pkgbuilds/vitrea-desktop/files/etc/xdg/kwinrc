@@ -1,6 +1,7 @@
 [org.kde.kdecoration2]
-library=org.kde.kwin.aurorae
-theme=__aurorae__svg__VitreaNight
+# plain Breeze title bars: monochrome minimise / maximise / close on the right
+library=org.kde.breeze
+theme=Breeze
 ButtonsOnLeft=
 ButtonsOnRight=IAX
 BorderSize=None
@@ -26,8 +27,15 @@ fadingpopupsEnabled=true
 slidingpopupsEnabled=true
 wobblywindowsEnabled=false
 overviewEnabled=true
+# pinch four fingers on the touchpad for Overview (usr/share/kwin/scripts/vitrea-gestures)
+vitrea-gesturesEnabled=true
 
 [Effect-blurplus]
+# glass (refraction, rim light) on the top bar and dock only; menus and popups just get a soft blur
+RefractionExcludeWindows=true
+RefractionExcludeMenus=true
+RefractionExcludeTooltips=true
+RefractionExcludeOSD=true
 BlurStrength=5
 DockBlurStrength=3
 DecorationBlurStrength=5
@@ -35,22 +43,22 @@ BlurMenus=true
 BlurDocks=true
 BlurMatching=false
 BlurNonMatching=false
-Saturation=1.35
+Saturation=1.10
 RefractionStrength=10
 RefractionEdgeSize=14
 RefractionNormalPow=4
 RefractionRGBFringing=2
 RefractionOffsetStrength=8
 RefractionBevelIntensity=10
-EdgeLighting=true
+EdgeLighting=false
 EdgeLightingDock=true
 RimSpecular=true
-RimSpecularScale=12
+RimSpecularScale=6
 RimWidth=18
-CursorRim=true
+CursorRim=false
 CursorRimStrength=50
 SquircleCorners=true
-EdgeShading=true
+EdgeShading=false
 EdgeShadowStrength=40
 UseDeclaredCornerRadius=true
 DockCornerRadius=16
@@ -78,3 +86,8 @@ TopLeft=None
 
 [Windows]
 BorderlessMaximizedWindows=false
+
+[NightColor]
+# warmer screen in the evening; the times are in knighttimerc
+Active=true
+NightTemperature=4200

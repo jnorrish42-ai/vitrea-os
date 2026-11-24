@@ -12,7 +12,7 @@ Row {
     height: maxHeight
 
     function mix(a, b, t) { return Qt.rgba(a.r + (b.r - a.r) * t, a.g + (b.g - a.g) * t, a.b + (b.b - a.b) * t, 1) }
-    readonly property var stops: [accent, Qt.color("#f5a3c7"), Qt.color("#89b4fa")]
+    readonly property var stops: [accent, Qt.lighter(accent, 1.3), accent]
 
     Repeater {
         model: wave.count

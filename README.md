@@ -5,15 +5,28 @@ plus [43PR's Hyprland dotfiles](https://github.com/43PR/dotfiles) as a second de
 
 ![Vitrea OS desktop](screenshots/desktop.png)
 
-## What's new: real photos, new lock and login screens
+## What's new: a calmer Vitrea, and updates you can undo
 
-* **Real photographs** instead of generated wallpapers. The default is *summer 1am*, a lake at dusk
-  by Risto Saukonpää; Vitrea Style offers **Lake**, **Mist**, **Forest** and **Ember**, all from
-  KDE's wallpaper collection (`plasma-workspace-wallpapers`).
-* **New lock screen**: the photo with a large clock while idle; start typing and it softly blurs
-  behind your picture, name and one password field. Built on KDE's own lock screen logic, and if
-  it ever fails to load, KDE's standard lock screen appears instead, so you can't get locked out.
-* **New login screen** to match.
+Arrives through Discover like every Vitrea update (no reinstall).
+
+**Look**
+* Real photo wallpapers (KDE's collection): Lake (default), Mist, Forest, Ember
+* Neutral dark grey colours; the one accent colour is taken from the wallpaper
+* Plain window buttons (Breeze), solid menus and pop-ups; glass only on the top bar and dock
+* No big desktop clock or Yumeka by default (both can be switched on in Vitrea Style)
+* One icon set (Papirus), a quiet boot splash (logo + thin progress line), new lock and login screens
+* Vitrea Style and Welcome rebuilt as plain, native-looking windows; Welcome is three steps
+
+**Features**
+* **Undo an update**: new installs use btrfs; a snapshot is taken before every update (snapper +
+  snap-pac) and listed in the boot menu (grub-btrfs). Start one, and Vitrea offers to restore it.
+* **Boot menu** always shows for 5 seconds and lists other systems (Windows, Arch...); Vitrea is the default
+* **What's new** notification after updates
+* Clipboard history (Meta+V), screenshots saved to Pictures/Screenshots (Meta+Shift+S to snip),
+  KDE Connect for your phone, Flathub apps in Discover, night light in the evening, drop-down terminal (F12)
+* **Macs**: Mac-style keys (Cmd+C/V/Q..., Cmd+Space, Cmd+Shift+3/4/5), Touch Bar media/F-keys
+  choice and fan profiles with live temperatures in Vitrea Style, pinch four fingers for all
+  windows (three-finger swipe switches desktops)
 
 ## The Liquid update
 

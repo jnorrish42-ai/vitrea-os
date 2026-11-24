@@ -1,4 +1,4 @@
-// Vitrea Liquid default desktop: slim glass top bar, floating glass dock, big clock + music widget.
+// Vitrea default desktop: slim top bar, floating dock, the wallpaper photo.
 var wallpaper = "file:///usr/share/wallpapers/summer_1am/";
 
 desktops().forEach(function (d) {
@@ -68,16 +68,10 @@ tasks.writeConfig("maxStripes", 1);
 tasks.writeConfig("showOnlyCurrentDesktop", false);
 tasks.writeConfig("indicateAudioStreams", true);
 
-// ---------- Desktop widgets: big clock (right), Now Playing card (bottom left), Yumeka (bottom right) ----------
+// ---------- Desktop: just the photo. The Now Playing card only shows while music plays. ----------
+// (The big clock and Yumeka can be added from Vitrea Style.)
 desktops().forEach(function (d) {
     var g = screenGeometry(d.screen);
-    var have_yumeka = false;
-    var cw = Math.round(g.width * 0.22), ch = Math.round(g.height * 0.40);
-    var clockW = d.addWidget("org.vitrea.clock", g.width - cw - Math.round(g.width * 0.06), Math.round(g.height * 0.16), cw, ch);
     var mw = Math.max(400, Math.round(g.width * 0.25)), mh = Math.max(150, Math.round(g.height * 0.17));
-    var media = d.addWidget("org.vitrea.music", Math.round(g.width * 0.03), g.height - mh - Math.round(g.height * 0.13), mw, mh);
-    if (!have_yumeka) {
-        var yw = Math.max(300, Math.round(g.width * 0.22)), yh = Math.max(420, Math.round(g.height * 0.40));
-        d.addWidget("org.vitrea.yumeka", g.width - yw - Math.round(g.width * 0.015), g.height - yh - Math.round(g.height * 0.03), yw, yh);
-    }
+    d.addWidget("org.vitrea.music", Math.round(g.width * 0.03), g.height - mh - Math.round(g.height * 0.13), mw, mh);
 });

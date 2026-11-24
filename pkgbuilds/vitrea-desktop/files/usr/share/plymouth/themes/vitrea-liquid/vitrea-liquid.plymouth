@@ -1,6 +1,6 @@
 [Plymouth Theme]
-Name=Vitrea Liquid
-Description=Vitrea OS animated boot splash: the glass V, a breathing halo, an orbiting comet and drifting petals
+Name=Vitrea
+Description=Vitrea OS boot splash: the logo on a dark background with a thin progress line
 ModuleName=script
 
 [script]

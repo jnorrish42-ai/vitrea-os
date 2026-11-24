@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Vitrea session check
+Comment=Shows what's new after an update, and offers to keep an earlier version you started from the boot menu
+Exec=/usr/lib/vitrea/session-check
+Icon=vitrea-logo
+NoDisplay=true
+X-KDE-autostart-phase=2
+OnlyShowIn=KDE;

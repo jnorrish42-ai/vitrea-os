@@ -1,0 +1,50 @@
+#!/bin/bash
+# "Undo an update": a btrfs snapshot of the system before every pacman transaction (snapper +
+# snap-pac), listed in the boot menu (grub-btrfs). A snapshot started from the boot menu runs on
+# a throwaway overlay, and Vitrea offers to restore it (/usr/lib/vitrea/restore-snapshot).
+# Only on btrfs (Vitrea's default disk layout); does nothing elsewhere. Safe to re-run.
+#   setup-snapshots              set up (the installer runs this before building the initramfs)
+#   setup-snapshots --upgrade    also rebuild the initramfs + boot menu if anything changed
+set -u
+[ "$(findmnt -no FSTYPE /)" = btrfs ] || exit 0
+command -v snapper >/dev/null || exit 0
+changed=0
+
+if [ ! -f /etc/snapper/configs/root ]; then
+    snapper --no-dbus -c root create-config / || exit 0
+    changed=1
+fi
+sed -i -e 's/^TIMELINE_CREATE=.*/TIMELINE_CREATE="no"/' \
+       -e 's/^NUMBER_LIMIT=.*/NUMBER_LIMIT="10"/' \
+       -e 's/^NUMBER_LIMIT_IMPORTANT=.*/NUMBER_LIMIT_IMPORTANT="4"/' \
+       -e 's/^ALLOW_GROUPS=.*/ALLOW_GROUPS="wheel"/' /etc/snapper/configs/root
+chmod 750 /.snapshots 2>/dev/null; chgrp wheel /.snapshots 2>/dev/null
+systemctl enable snapper-cleanup.timer grub-btrfsd.service >/dev/null 2>&1 || true
+
+# boot menu entries for the snapshots
+conf=/etc/default/grub-btrfs/config
+if [ -f "$conf" ]; then
+    sed -i -e 's|^#\?GRUB_BTRFS_SUBMENUNAME=.*|GRUB_BTRFS_SUBMENUNAME="Earlier versions of Vitrea (before updates)"|' \
+           -e 's|^#\?GRUB_BTRFS_SNAPSHOT_KERNEL_PARAMETERS=.*|GRUB_BTRFS_SNAPSHOT_KERNEL_PARAMETERS="systemd.volatile=overlay"|' \
+           -e 's|^#\?GRUB_BTRFS_TITLE_FORMAT=.*|GRUB_BTRFS_TITLE_FORMAT=("date" "description")|' \
+           -e 's|^#\?GRUB_BTRFS_LIMIT=.*|GRUB_BTRFS_LIMIT="10"|' "$conf"
+fi
+
+# a snapshot is read-only: boot it on a temporary overlay
+#   systemd initramfs: sd-volatile + systemd.volatile=overlay;  udev initramfs: grub-btrfs-overlayfs
+mk=/etc/mkinitcpio.conf
+if grep -qE '^HOOKS=\(.*\bsystemd\b' "$mk"; then
+    hook=sd-volatile
+else
+    hook=grub-btrfs-overlayfs
+fi
+if ! grep -qE "^HOOKS=\(.*\b$hook\b" "$mk"; then
+    sed -i -E "s/^(HOOKS=\(.*)\)/\1 $hook)/" "$mk"
+    changed=1
+fi
+
+if [ "${1:-}" = --upgrade ] && [ $changed = 1 ]; then
+    mkinitcpio -P >/dev/null 2>&1 || true
+    [ -f /boot/grub/grub.cfg ] && grub-mkconfig -o /boot/grub/grub.cfg >/dev/null 2>&1 || true
+fi
+exit 0

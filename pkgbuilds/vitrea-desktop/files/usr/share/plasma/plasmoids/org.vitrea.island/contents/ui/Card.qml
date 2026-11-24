@@ -57,7 +57,7 @@ Item {
             color: chip.danger ? Qt.rgba(1, 0.35, 0.35, cm.containsMouse ? 0.32 : 0.22) : Qt.rgba(1, 1, 1, cm.containsMouse ? 0.18 : 0.10)
             border.color: Qt.rgba(1, 1, 1, 0.22)
         }
-        Text { id: lbl; anchors.centerIn: parent; text: chip.text; color: "#f4f4ff"; font.family: "Inter"; font.pixelSize: 13; font.weight: Font.DemiBold }
+        Text { id: lbl; anchors.centerIn: parent; text: chip.text; color: "#f4f4f5"; font.family: "Inter"; font.pixelSize: 13; font.weight: Font.DemiBold }
         MouseArea { id: cm; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: chip.clicked() }
     }
 
@@ -85,25 +85,25 @@ Item {
             }
             ColumnLayout {
                 Layout.fillWidth: true; spacing: 2
-                Text { Layout.fillWidth: true; text: card.title; color: "#f6f6ff"; elide: Text.ElideRight; font.family: "Inter"; font.pixelSize: 19; font.weight: Font.DemiBold }
-                Text { Layout.fillWidth: true; text: card.artist; color: "#8e93b0"; elide: Text.ElideRight; font.family: "Inter"; font.pixelSize: 16 }
+                Text { Layout.fillWidth: true; text: card.title; color: "#f6f6f7"; elide: Text.ElideRight; font.family: "Inter"; font.pixelSize: 19; font.weight: Font.DemiBold }
+                Text { Layout.fillWidth: true; text: card.artist; color: "#9a9a9f"; elide: Text.ElideRight; font.family: "Inter"; font.pixelSize: 16 }
             }
             Wave { Layout.alignment: Qt.AlignTop; count: 6; barWidth: 3; maxHeight: 26; running: card.playing; accent: card.accent }
         }
         RowLayout {
             visible: card.active
             spacing: 12
-            Text { text: card.fmt(card.position); color: "#8e93b0"; font.family: "Inter"; font.pixelSize: 12; Layout.preferredWidth: 34 }
+            Text { text: card.fmt(card.position); color: "#9a9a9f"; font.family: "Inter"; font.pixelSize: 12; Layout.preferredWidth: 34 }
             Rectangle {
                 Layout.fillWidth: true; height: 6; radius: 3
                 color: Qt.rgba(1, 1, 1, 0.22)
                 Rectangle {
                     height: parent.height; radius: 3
                     width: card.length > 0 ? parent.width * Math.min(1, card.position / card.length) : 0
-                    color: "#f2f2f8"
+                    color: "#f2f2f3"
                 }
             }
-            Text { text: card.length > 0 ? "-" + card.fmt(card.length - card.position) : "--:--"; color: "#8e93b0"; font.family: "Inter"; font.pixelSize: 12; Layout.preferredWidth: 38; horizontalAlignment: Text.AlignRight }
+            Text { text: card.length > 0 ? "-" + card.fmt(card.length - card.position) : "--:--"; color: "#9a9a9f"; font.family: "Inter"; font.pixelSize: 12; Layout.preferredWidth: 38; horizontalAlignment: Text.AlignRight }
         }
         Item {
             visible: card.active
@@ -123,22 +123,22 @@ Item {
             visible: !card.active
             Layout.alignment: Qt.AlignHCenter
             spacing: 0
-            Text { Layout.alignment: Qt.AlignHCenter; text: Qt.formatTime(card.now, "HH:mm"); color: "#f4f4ff"; font.family: "Inter"; font.pixelSize: 46; font.weight: Font.Light }
-            Text { Layout.alignment: Qt.AlignHCenter; text: Qt.formatDate(card.now, "dddd d MMMM") + "  ·  Nothing playing"; color: "#8e93b0"; font.family: "Inter"; font.pixelSize: 13 }
+            Text { Layout.alignment: Qt.AlignHCenter; text: Qt.formatTime(card.now, "HH:mm"); color: "#f4f4f5"; font.family: "Inter"; font.pixelSize: 46; font.weight: Font.Light }
+            Text { Layout.alignment: Qt.AlignHCenter; text: Qt.formatDate(card.now, "dddd d MMMM") + "  ·  Nothing playing"; color: "#9a9a9f"; font.family: "Inter"; font.pixelSize: 13 }
         }
 
         // ---- timer ----
         Rectangle { Layout.fillWidth: true; height: 1; color: Qt.rgba(1, 1, 1, 0.08) }
         RowLayout {
             spacing: 10
-            GlyphIcon { kind: "timer"; color: card.timerRunning ? card.accent : "#8e93b0"; Layout.preferredWidth: 20; Layout.preferredHeight: 20 }
+            GlyphIcon { kind: "timer"; color: card.timerRunning ? card.accent : "#9a9a9f"; Layout.preferredWidth: 20; Layout.preferredHeight: 20 }
             Text {
                 visible: card.timerRunning
                 text: card.timerText
                 color: card.accent; font.family: "Inter"; font.pixelSize: 20; font.weight: Font.DemiBold
                 font.features: { "tnum": 1 }
             }
-            Text { visible: !card.timerRunning; text: "Timer"; color: "#8e93b0"; font.family: "Inter"; font.pixelSize: 14 }
+            Text { visible: !card.timerRunning; text: "Timer"; color: "#9a9a9f"; font.family: "Inter"; font.pixelSize: 14 }
             Item { Layout.fillWidth: true }
             Repeater {
                 model: card.timerRunning ? [] : [1, 5, 10, 25]

@@ -1,9 +1,13 @@
 {
     "KPackageStructure": "Plasma/Applet",
     "KPlugin": {
-        "Authors": [{ "Name": "Vitrea OS" }],
+        "Authors": [
+            {
+                "Name": "Vitrea OS"
+            }
+        ],
         "Category": "Date and Time",
-        "Description": "A living pill in the top bar: the time, and whatever is playing. Click to expand.",
+        "Description": "The time in the top bar; shows what is playing, volume and brightness changes, notifications and timers. Click for more.",
         "Icon": "vitrea-logo",
         "Id": "org.vitrea.island",
         "License": "GPL-2.0-or-later",

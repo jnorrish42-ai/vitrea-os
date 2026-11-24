@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Build Vitrea's Liquid Glass Plasma themes from Plasma's default (Breeze) theme.
+"""Build Vitrea's Plasma themes from Plasma's default (Breeze) theme.
 
 Writes three complete themes (a full copy each, so nothing falls back to Breeze):
   vitrea-liquid-clear   panels almost clear, the wallpaper shows through, refracted
   vitrea-liquid         balanced (default)
   vitrea-liquid-frosted more tint, best readability
-Panels, the dock, popups and tooltips get a clear glass body, a soft top sheen and a light rim;
-buttons become glass pills. The KWin "glass" effect adds the real refraction and specular light.
+The top bar and dock get a see-through glass body (the KWin "glass" effect adds refraction);
+popups, menus and tooltips stay near-solid so text is always easy to read.
 Re-run by a pacman hook whenever Plasma updates its default theme.
 Usage: make-liquid-themes.py [SRC_THEME_DIR] [DEST_PARENT_DIR]
 """
@@ -18,16 +18,18 @@ DEST = sys.argv[2] if len(sys.argv) > 2 else '/usr/share/plasma/desktoptheme'
 
 # tint = opacity of the colour-scheme background inside the glass
 VARIANTS = {
-    'vitrea-liquid-clear':   dict(name='Vitrea Liquid (Clear)',   panel=0.16, dialog=0.46, tooltip=0.58, widget=0.36),
-    'vitrea-liquid':         dict(name='Vitrea Liquid',           panel=0.30, dialog=0.62, tooltip=0.72, widget=0.50),
-    'vitrea-liquid-frosted': dict(name='Vitrea Liquid (Frosted)', panel=0.52, dialog=0.80, tooltip=0.86, widget=0.70),
+    # glass on the top bar and dock only; popups, menus and tooltips are near-solid
+    'vitrea-liquid-clear':   dict(name='Vitrea (more transparent)', panel=0.18, dialog=0.86, tooltip=0.90, widget=0.40),
+    'vitrea-liquid':         dict(name='Vitrea',                    panel=0.32, dialog=0.92, tooltip=0.94, widget=0.55),
+    'vitrea-liquid-frosted': dict(name='Vitrea (less transparent)', panel=0.55, dialog=0.96, tooltip=0.97, widget=0.75),
 }
 FRAMES = {  # file -> (variant key for tint, sheen top, rim top, rim side, rim bottom, corner radius)
-    'translucent/widgets/panel-background.svgz': ('panel', 0.10, 0.42, 0.20, 0.10, 16),
-    'translucent/dialogs/background.svgz':       ('dialog', 0.07, 0.34, 0.16, 0.08, 14),
-    'translucent/widgets/tooltip.svgz':          ('tooltip', 0.06, 0.30, 0.14, 0.08, 10),
-    'translucent/widgets/background.svgz':       ('widget', 0.07, 0.34, 0.16, 0.08, 18),
+    'translucent/widgets/panel-background.svgz': ('panel', 0.05, 0.22, 0.10, 0.05, 16),
+    'translucent/dialogs/background.svgz':       ('dialog', 0.0, 0.10, 0.08, 0.05, 12),
+    'translucent/widgets/tooltip.svgz':          ('tooltip', 0.0, 0.08, 0.06, 0.04, 8),
+    'translucent/widgets/background.svgz':       ('widget', 0.0, 0.10, 0.08, 0.05, 14),
 }
+GLASS_BUTTONS = False   # plain Breeze buttons; set True for the old glass pills
 BG = 'class="ColorScheme-Background"'
 DEFS_ID = 'vitrea-liquid-defs'
 
@@ -180,7 +182,7 @@ def build(theme_id, v):
     meta_path = os.path.join(tmp, 'metadata.json')
     meta = json.load(open(meta_path)) if os.path.exists(meta_path) else {'KPlugin': {}}
     meta.setdefault('KPlugin', {}).update({
-        'Id': theme_id, 'Name': v['name'], 'Description': 'Liquid Glass theme for Vitrea OS',
+        'Id': theme_id, 'Name': v['name'], 'Description': 'Vitrea OS: see-through top bar and dock, solid menus',
         'Authors': [{'Name': 'Vitrea OS'}], 'Category': '', 'License': 'LGPL-2.0-or-later', 'Website': ''})
     json.dump(meta, open(meta_path, 'w'), indent=4)
     with open(os.path.join(tmp, 'plasmarc'), 'w') as f:
@@ -193,7 +195,7 @@ def build(theme_id, v):
             with gzip.open(path, 'wb') as o:
                 o.write(glassify_frame(svg, v[key], sheen, rt, rs, rb, rad).encode())
     btn = os.path.join(tmp, 'widgets/button.svgz')
-    if os.path.exists(btn):
+    if GLASS_BUTTONS and os.path.exists(btn):
         with gzip.open(btn, 'rb') as i:
             svg = i.read().decode()
         with gzip.open(btn, 'wb') as o:
@@ -207,7 +209,7 @@ def main():
         sys.exit(f'{SRC} not found')
     for theme_id, v in VARIANTS.items():
         build(theme_id, v)
-    print('Vitrea Liquid themes written to', DEST)
+    print('Vitrea Plasma themes written to', DEST)
 
 
 if __name__ == '__main__':

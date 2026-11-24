@@ -2,7 +2,8 @@
 widgetStyle=Breeze
 
 [kdeglobals][General]
-ColorScheme=VitreaNight
+ColorScheme=VitreaDark
+accentColorFromWallpaper=true
 
 [kdeglobals][Icons]
 Theme=Papirus-Dark
@@ -20,8 +21,8 @@ LayoutName=org.kde.breeze.desktop
 LayoutName=org.kde.breeze.desktop
 
 [kwinrc][org.kde.kdecoration2]
-library=org.kde.kwin.aurorae
-theme=__aurorae__svg__VitreaNight
+library=org.kde.breeze
+theme=Breeze
 
 [KSplash]
 Engine=KSplashQML

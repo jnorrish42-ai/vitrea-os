@@ -1,0 +1,13 @@
+{
+    "KPackageStructure": "KWin/Script",
+    "KPlugin": {
+        "Authors": [ { "Name": "Vitrea OS" } ],
+        "Description": "Pinch four fingers together on the touchpad to see all windows",
+        "EnabledByDefault": true,
+        "Icon": "input-touchpad",
+        "Id": "vitrea-gestures",
+        "License": "GPL",
+        "Name": "Vitrea touchpad gestures"
+    },
+    "X-Plasma-API": "declarativescript"
+}

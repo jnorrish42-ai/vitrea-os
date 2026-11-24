@@ -4,7 +4,9 @@ widgetStyle=Breeze
 SingleClick=false
 
 [General]
-ColorScheme=VitreaNight
+ColorScheme=VitreaDark
+# the one accent colour comes from the wallpaper
+accentColorFromWallpaper=true
 font=Inter,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
 menuFont=Inter,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
 toolBarFont=Inter,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1

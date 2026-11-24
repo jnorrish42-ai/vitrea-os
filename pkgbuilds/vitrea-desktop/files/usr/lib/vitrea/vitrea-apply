@@ -30,30 +30,13 @@ if [ -e /usr/lib/vitrea/t2-wifi-firmware ]; then
   printf 'VARIANT="T2 Mac edition"\nVARIANT_ID=t2\n' >> /etc/os-release
 fi
 
-# --- colour schemes: Breeze + Vitrea glass-blue accent ---
-for v in Light Dark; do
-  src=/usr/share/color-schemes/Breeze$v.colors; dst=/usr/share/color-schemes/Vitrea$v.colors
-  [ -f "$src" ] || continue
-  sed -e "s/^Name=.*/Name=Vitrea $v/" -e 's/61,174,233/47,124,246/g' \
-      -e 's/^DecorationFocus=.*/DecorationFocus=47,124,246/' -e 's/^DecorationHover=.*/DecorationHover=47,124,246/' "$src" > "$dst"
-  if [ $v = Light ]; then
-    sed -i -e '/^\[WM\]/,/^\[/ s/^activeBackground=.*/activeBackground=236,239,247/' \
-           -e '/^\[WM\]/,/^\[/ s/^inactiveBackground=.*/inactiveBackground=240,242,248/' \
-           -e '/^\[WM\]/,/^\[/ s/^activeForeground=.*/activeForeground=20,24,42/' "$dst"
-    sed -i -e '/^\[WM\]/,/^\[/ s/^activeBackground=.*/activeBackground=236,239,247,165/' \
-           -e '/^\[WM\]/,/^\[/ s/^inactiveBackground=.*/inactiveBackground=240,242,248,140/' "$dst"
-  else
-    sed -i -e '/^\[WM\]/,/^\[/ s/^activeBackground=.*/activeBackground=32,36,52/' \
-           -e '/^\[WM\]/,/^\[/ s/^inactiveBackground=.*/inactiveBackground=28,31,44/' "$dst"
-    sed -i -e '/^\[WM\]/,/^\[/ s/^activeBackground=.*/activeBackground=32,36,52,175/' \
-           -e '/^\[WM\]/,/^\[/ s/^inactiveBackground=.*/inactiveBackground=28,31,44,150/' "$dst"
-  fi
-done
+# --- colour schemes: neutral grey Vitrea Dark / Vitrea Light (accent comes from the wallpaper) ---
+python3 /usr/lib/vitrea/make-colors.py || true
 
-# --- Liquid Glass Plasma themes (clear / balanced / frosted), rebuilt by a pacman hook when Plasma updates ---
+# --- Plasma themes (more / normal / less transparent), rebuilt by a pacman hook when Plasma updates ---
 python3 /usr/lib/vitrea/make-liquid-themes.py
 printf '[Theme]\nname=vitrea-liquid\n' > /etc/xdg/plasmarc
-# Liquid Glass only with a GPU (falls back to plain blur in VMs / without drivers)
+# the glass effect only with a GPU (falls back to plain blur in VMs / without drivers)
 systemctl --global enable vitrea-glass-guard.service 2>/dev/null || true
 
 # --- 43PR: white Papirus folders (as its installer does) ---
@@ -91,6 +74,12 @@ if ! grep -q '^\[vitrea\]' /etc/pacman.conf; then
 SigLevel = Optional TrustAll
 Server = https://github.com/jnorrish42-ai/vitrea-os/releases/download/repo
 CONF
+fi
+
+# --- what's new after updates; "undo an update" snapshots on btrfs installs ---
+systemctl --global enable vitrea-whats-new.path >/dev/null 2>&1 || true
+if [ $UPGRADE = 1 ]; then
+  /usr/lib/vitrea/setup-snapshots --upgrade || true
 fi
 
 # the boot splash lives in the initramfs: rebuild it on upgrades when the splash changed

@@ -1,0 +1,36 @@
+#!/bin/bash
+# Mac-style keys for the current user:  mac-keys on|off [--at-login]
+#   on:  Cmd works like Ctrl (Cmd+C/V/X/Z/A/S/Q/W/T/F...), Control works like the Super key;
+#        Cmd+Space opens search, Cmd+Shift+3 / 4 / 5 take a screenshot / snip / record.
+#   off: standard PC keys.
+# The keyboard change applies at once; the shortcuts at the next login (--at-login sets them
+# before Plasma starts, so nothing overwrites them).
+mode=$1
+opts=$(kreadconfig6 --file kxkbrc --group Layout --key Options)
+clean=$(echo "$opts" | tr ',' '\n' | grep -v -e '^ctrl:swap_lwin_lctl$' -e '^ctrl:swap_rwin_rctl$' -e '^$' | paste -sd,)
+if [ "$mode" = on ]; then
+    new=$(printf '%s\n' "$clean" ctrl:swap_lwin_lctl ctrl:swap_rwin_rctl | grep -v '^$' | paste -sd,)
+else
+    new=$clean
+fi
+if [ "$new" != "$opts" ]; then
+    kwriteconfig6 --file kxkbrc --group Layout --key Options "$new"
+    kwriteconfig6 --file kxkbrc --group Layout --key ResetOldOptions true
+    dbus-send --session --type=signal --reply-timeout=100 /Layouts org.kde.keyboard.reloadConfig 2>/dev/null || true
+fi
+kwriteconfig6 --file vitrearc --group Keyboard --key MacStyle "$([ "$mode" = on ] && echo true || echo false)"
+
+if [ "${2:-}" = --at-login ]; then
+    sc() { kwriteconfig6 --file kglobalshortcutsrc --group services --group "$1" --key "$2" "$3"; }
+    if [ "$mode" = on ]; then
+        sc org.kde.krunner.desktop _launch $'Alt+Space\tAlt+F2\tSearch\tCtrl+Space'
+        sc org.kde.spectacle.desktop FullScreenScreenShot $'Shift+Print\tCtrl+Shift+3'
+        sc org.kde.spectacle.desktop RectangularRegionScreenShot $'Meta+Shift+S\tMeta+Shift+Print\tCtrl+Shift+4'
+        sc org.kde.spectacle.desktop RecordRegion $'Meta+Shift+R\tMeta+R\tCtrl+Shift+5'
+    else
+        sc org.kde.krunner.desktop _launch $'Alt+Space\tAlt+F2\tSearch'
+        sc org.kde.spectacle.desktop FullScreenScreenShot "Shift+Print"
+        sc org.kde.spectacle.desktop RectangularRegionScreenShot $'Meta+Shift+S\tMeta+Shift+Print'
+        sc org.kde.spectacle.desktop RecordRegion $'Meta+Shift+R\tMeta+R'
+    fi
+fi

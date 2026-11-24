@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Vitrea Welcome: a friendly first-run hub (install, apps, Wi-Fi, appearance)."""
+"""Vitrea Welcome: three steps to get started (internet, install or updates, explore)."""
 import os
 import shutil
 import subprocess
@@ -74,9 +74,6 @@ class Backend(QObject):
             "style": ["vitrea-style"],
             "display": ["systemsettings", "kcm_kscreen"],
             "updates": ["plasma-discover", "--mode", "update"],
-            "light": ["vitrea-appearance", "light"],
-            "dark": ["vitrea-appearance", "dark"],
-            "help": ["xdg-open", "https://wiki.archlinux.org/"],
             "macwifi": ["konsole", "--hold", "-e", "sudo", "apple-bcm-firmware-fetcher", "-v"],
         }
         cmd = cmds.get(action)
@@ -89,6 +86,7 @@ def main():
         return 0
     app = QGuiApplication(sys.argv)
     app.setApplicationName("Vitrea Welcome")
+    app.setApplicationDisplayName("Welcome to Vitrea")
     app.setDesktopFileName("vitrea-welcome")
     app.setWindowIcon(QIcon.fromTheme("vitrea-logo"))
     engine = QQmlApplicationEngine()

@@ -7,10 +7,10 @@
             }
         ],
         "Category": "",
-        "Description": "Dark riced desktop: slim top bar with workspaces and a floating dock",
+        "Description": "Vitrea OS: top bar with workspaces, a dock, neutral dark colours",
         "Id": "org.vitrea.glass.desktop",
         "License": "GPL-2.0+",
-        "Name": "Vitrea Night",
+        "Name": "Vitrea",
         "Version": "1.0"
     },
     "X-Plasma-APIVersion": "2"

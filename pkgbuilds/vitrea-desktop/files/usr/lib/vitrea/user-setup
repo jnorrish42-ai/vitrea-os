@@ -1,0 +1,59 @@
+#!/bin/bash
+# Per-user Vitrea settings. Runs at login before Plasma starts (from
+# /etc/xdg/plasma-workspace/env/vitrea-user-setup.sh). Each step runs once and is recorded in
+# ~/.config/vitrearc [Setup]; Mac-style keys are re-synced every login from [Keyboard] MacStyle.
+cfg="${XDG_CONFIG_HOME:-$HOME/.config}"
+export QT_QPA_PLATFORM=offscreen     # runs before the desktop exists; the colour tool needs a "screen"
+pending() { [ "$(kreadconfig6 --file vitrearc --group Setup --key "$1")" != done ]; }
+finish() { kwriteconfig6 --file vitrearc --group Setup --key "$1" done; }
+own() { grep -s "^$2=" "$cfg/$1" | tail -1 | cut -d= -f2-; }     # the user's own value, not the default
+sc() { kwriteconfig6 --file kglobalshortcutsrc --group services --group "$1" --key "$2" "$3"; }
+
+# ---- first login of a new account: nothing is "new" to them yet ----
+if pending first-login; then
+    if [ ! -e "$cfg/plasma-org.kde.plasma.desktop-appletsrc" ]; then
+        id=$(python3 -c 'import json; print(json.load(open("/usr/share/vitrea/whats-new.json"))["id"])' 2>/dev/null)
+        [ -n "$id" ] && kwriteconfig6 --file vitrearc --group WhatsNew --key Seen "$id"
+    fi
+    finish first-login
+fi
+
+# ---- calm-2: neutral colours, accent from the wallpaper, plain title bars ----
+# (accounts made before this update carry a copy of the old purple scheme in kdeglobals)
+if pending calm-2; then
+    case "$(own kdeglobals ColorScheme)" in
+        VitreaLight|BreezeLight) plasma-apply-colorscheme BreezeLight; plasma-apply-colorscheme VitreaLight ;;
+        ""|VitreaNight|VitreaDark|BreezeDark) plasma-apply-colorscheme BreezeLight; plasma-apply-colorscheme VitreaDark ;;
+    esac
+    kwriteconfig6 --file kdeglobals --group General --key accentColorFromWallpaper true
+    if own kwinrc library | grep -q aurorae; then
+        kwriteconfig6 --file kwinrc --group org.kde.kdecoration2 --key library org.kde.breeze
+        kwriteconfig6 --file kwinrc --group org.kde.kdecoration2 --key theme Breeze
+    fi
+    finish calm-2
+fi
+
+# ---- tools-1: screenshots save straight to a folder (and to the clipboard) ----
+if pending tools-1; then
+    pics=$(xdg-user-dir PICTURES 2>/dev/null || echo "$HOME/Pictures")
+    vids=$(xdg-user-dir VIDEOS 2>/dev/null || echo "$HOME/Videos")
+    mkdir -p "$pics/Screenshots" "$vids/Screen Recordings"
+    kwriteconfig6 --file spectaclerc --group General --key autoSaveImage true
+    kwriteconfig6 --file spectaclerc --group General --key clipboardGroup PostScreenshotCopyImage
+    kwriteconfig6 --file spectaclerc --group ImageSave --key imageSaveLocation "file://$pics/Screenshots"
+    kwriteconfig6 --file spectaclerc --group VideoSave --key videoSaveLocation "file://$vids/Screen Recordings"
+    # Meta+Shift+S: snip an area straight to the folder (Print still opens Spectacle)
+    sc org.kde.spectacle.desktop _launch "Print"
+    finish tools-1
+fi
+
+# ---- Mac-style keys: Cmd acts as Ctrl (copy, paste, quit, save...), Cmd+Space search ----
+# on by default on Apple hardware running the T2 edition; switch in Vitrea Style
+if pending mac-1; then
+    if [ "$(cat /sys/class/dmi/id/sys_vendor 2>/dev/null)" = "Apple Inc." ] && [ -e /usr/lib/vitrea/t2-wifi-firmware ]; then
+        kwriteconfig6 --file vitrearc --group Keyboard --key MacStyle true
+    fi
+    finish mac-1
+fi
+/usr/lib/vitrea/mac-keys "$( [ "$(kreadconfig6 --file vitrearc --group Keyboard --key MacStyle)" = true ] && echo on || echo off)" --at-login
+exit 0

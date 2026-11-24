@@ -1,0 +1,39 @@
+#!/bin/bash
+# Restore a snapshot started from the boot menu, as the normal system from the next boot.
+#   restore-snapshot N      (run as root, while booted into snapshot N)
+# btrfs layout (Vitrea installer): top level holds @ (the system, with snapper's .snapshots
+# inside it), @home, @cache, @log. The current @ is kept as @replaced-<date> (the previous one
+# of those is deleted), a writable copy of snapshot N becomes the new @, and the snapshots move
+# into it. Your Home folder (@home) is not touched.
+set -euo pipefail
+n=${1:-}
+[[ $n =~ ^[0-9]+$ ]] || { echo "usage: restore-snapshot N"; exit 2; }
+grep -qE "subvol=\"?/?@/\.snapshots/$n/snapshot" /proc/cmdline || { echo "not running from snapshot $n"; exit 3; }
+
+dev=$(findmnt -nt btrfs -o SOURCE | head -1 | sed 's/\[.*\]$//')
+[ -b "$dev" ] || { echo "btrfs device not found"; exit 4; }
+top=$(mktemp -d /run/vitrea-restore.XXXXXX)
+mount -o subvolid=5 "$dev" "$top"
+trap 'umount "$top" 2>/dev/null; rmdir "$top" 2>/dev/null' EXIT
+
+src="$top/@/.snapshots/$n/snapshot"
+[ -d "$src" ] || { echo "snapshot $n not found"; exit 5; }
+stamp=$(date +%Y-%m-%d_%H%M%S)
+
+# drop the previously replaced system (and anything nested in it)
+for old in "$top"/@replaced-*; do
+    [ -d "$old" ] || continue
+    btrfs subvolume list -o "$old" | awk '{print $NF}' | sort -r | while read -r sub; do
+        btrfs subvolume delete "$top/$sub" >/dev/null || true
+    done
+    btrfs subvolume delete "$old" >/dev/null || true
+done
+
+mv "$top/@" "$top/@replaced-$stamp"
+if ! btrfs subvolume snapshot "$top/@replaced-$stamp/.snapshots/$n/snapshot" "$top/@" >/dev/null; then
+    mv "$top/@replaced-$stamp" "$top/@"      # put everything back
+    echo "could not copy the snapshot"; exit 6
+fi
+rmdir "$top/@/.snapshots" 2>/dev/null || true
+mv "$top/@replaced-$stamp/.snapshots" "$top/@/.snapshots"
+echo "restored snapshot $n; the previous system is kept as @replaced-$stamp"

@@ -1,0 +1,81 @@
+#!/usr/bin/env python3
+"""Mac hardware settings for Vitrea Style (run as root through pkexec):
+  mac-settings touchbar media|fkeys        what the Touch Bar shows without Fn (tiny-dfr)
+  mac-settings fans quiet|balanced|cool|max how eagerly the fans spin up (t2fanrd)
+"""
+import os, re, subprocess, sys, time
+
+TINY_DFR = '/etc/tiny-dfr/config.toml'
+T2FAND = '/etc/t2fand.conf'
+FAN_PROFILES = {   # low_temp, high_temp, speed_curve, always_full_speed
+    'quiet':    ('60', '85', 'exponential', 'false'),
+    'balanced': ('55', '75', 'linear', 'false'),
+    'cool':     ('45', '68', 'logarithmic', 'false'),
+    'max':      ('55', '75', 'linear', 'true'),
+}
+
+
+def systemctl(*a):
+    subprocess.run(['systemctl', *a], capture_output=True)
+
+
+def touchbar(mode):
+    value = 'true' if mode == 'media' else 'false'
+    os.makedirs(os.path.dirname(TINY_DFR), exist_ok=True)
+    text = open(TINY_DFR).read() if os.path.exists(TINY_DFR) else ''
+    if re.search(r'^MediaLayerDefault\s*=', text, re.M):
+        text = re.sub(r'^MediaLayerDefault\s*=.*$', f'MediaLayerDefault = {value}', text, flags=re.M)
+    else:
+        text = f'MediaLayerDefault = {value}\n' + text
+    open(TINY_DFR, 'w').write(text)
+    systemctl('try-restart', 'tiny-dfr.service')
+
+
+def fans(profile):
+    lo, hi, curve, full = FAN_PROFILES[profile]
+    if not os.path.exists(T2FAND):          # t2fanrd writes a default config on first start
+        systemctl('restart', 't2fanrd.service')
+        time.sleep(2)
+    text = open(T2FAND).read() if os.path.exists(T2FAND) else '[Fan1]\n'
+    out, keys = [], {'low_temp': lo, 'high_temp': hi, 'speed_curve': curve, 'always_full_speed': full}
+
+    def flush_missing(seen):
+        for k, v in keys.items():
+            if k not in seen:
+                out.append(f'{k}={v}')
+
+    seen, in_fan = set(), False
+    for line in text.splitlines():
+        m = re.match(r'^\s*\[(.+)\]\s*$', line)
+        if m:
+            if in_fan:
+                flush_missing(seen)
+            in_fan, seen = m.group(1).lower().startswith('fan'), set()
+            out.append(line)
+            continue
+        k = line.split('=', 1)[0].strip()
+        if in_fan and k in keys:
+            out.append(f'{k}={keys[k]}')
+            seen.add(k)
+        else:
+            out.append(line)
+    if in_fan:
+        flush_missing(seen)
+    open(T2FAND, 'w').write('\n'.join(out) + '\n')
+    systemctl('restart', 't2fanrd.service')
+
+
+def main():
+    if len(sys.argv) != 3:
+        sys.exit(__doc__)
+    what, value = sys.argv[1:]
+    if what == 'touchbar' and value in ('media', 'fkeys'):
+        touchbar(value)
+    elif what == 'fans' and value in FAN_PROFILES:
+        fans(value)
+    else:
+        sys.exit(__doc__)
+
+
+if __name__ == '__main__':
+    main()

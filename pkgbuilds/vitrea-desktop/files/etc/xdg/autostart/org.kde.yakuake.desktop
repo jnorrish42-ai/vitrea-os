@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Yakuake
+Comment=Drop-down terminal: press F12
+Exec=yakuake
+Icon=yakuake
+X-KDE-autostart-phase=2
+X-GNOME-Autostart-enabled=true
+OnlyShowIn=KDE;

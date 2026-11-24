@@ -1,309 +1,239 @@
+// Vitrea Style: a plain settings window in the system's own style.
 import QtQuick
-import QtQuick.Controls
+import QtQuick.Controls as QQC2
 import QtQuick.Layouts
-import QtQuick.Window
 import org.kde.kirigami as Kirigami
 
-ApplicationWindow {
+QQC2.ApplicationWindow {
     id: win
-    width: 820
-    height: 700
-    minimumWidth: 680
-    minimumHeight: 560
+    width: 720
+    height: 760
+    minimumWidth: 560
+    minimumHeight: 480
     visible: true
     title: "Vitrea Style"
-    color: "transparent"
 
-    readonly property color ink: "#eef0ff"
-    readonly property color subInk: "#a9aed0"
-    property color accent: "#cba6f7"
+    readonly property var shown: backend.widgets.split(",")
 
-    // ---------- liquid glass pill button ----------
-    component GlassPill: Item {
-        id: pill
-        property string text
-        property string icon: ""
-        property bool selected: false
-        property color tint: "transparent"
-        signal clicked
-        implicitWidth: Math.max(96, row.implicitWidth + 36)
-        implicitHeight: 42
-        scale: area.pressed ? 0.95 : (area.containsMouse ? 1.04 : 1.0)
-        Behavior on scale { SpringAnimation { spring: 4.5; damping: 0.28; epsilon: 0.001 } }
-
-        Rectangle {   // accent glow when selected
-            anchors.fill: parent
-            anchors.margins: -5
-            radius: height / 2
-            color: "transparent"
-            border.width: 6
-            border.color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, pill.selected ? 0.22 : 0)
-            Behavior on border.color { ColorAnimation { duration: 220 } }
-        }
-        Rectangle {   // glass body
-            id: body
-            anchors.fill: parent
-            radius: height / 2
-            color: pill.tint != Qt.color("transparent") ? pill.tint
-                 : pill.selected ? Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.28)
-                 : Qt.rgba(1, 1, 1, area.containsMouse ? 0.16 : 0.09)
-            Behavior on color { ColorAnimation { duration: 180 } }
-            border.width: 1
-            border.color: pill.selected ? Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.95)
-                        : Qt.rgba(1, 1, 1, area.containsMouse ? 0.55 : 0.30)
-            Behavior on border.color { ColorAnimation { duration: 180 } }
-            // top sheen
-            Rectangle {
-                anchors { left: parent.left; right: parent.right; top: parent.top; margins: 2 }
-                height: parent.height * 0.48
-                radius: height / 2
-                gradient: Gradient {
-                    GradientStop { position: 0; color: Qt.rgba(1, 1, 1, area.containsMouse ? 0.30 : 0.20) }
-                    GradientStop { position: 1; color: Qt.rgba(1, 1, 1, 0) }
-                }
-            }
-        }
-        RowLayout {
-            id: row
-            anchors.centerIn: parent
-            spacing: 8
-            Kirigami.Icon { visible: pill.icon !== ""; source: pill.icon; Layout.preferredWidth: 18; Layout.preferredHeight: 18 }
-            Label { text: pill.text; color: win.ink; font.pixelSize: 14; font.weight: pill.selected ? Font.DemiBold : Font.Normal }
-        }
-        MouseArea {
-            id: area
-            anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-            onClicked: pill.clicked()
-        }
+    // a ComboBox over [{text, value}] that starts on `current` and reports the chosen value
+    component Choice: QQC2.ComboBox {
+        property string current
+        signal chosen(string value)
+        textRole: "text"
+        valueRole: "value"
+        Component.onCompleted: currentIndex = Math.max(0, indexOfValue(current))
+        onActivated: chosen(currentValue)
     }
-
-    // ---------- section card ----------
-    component Card: Rectangle {
-        default property alias content: inner.data
-        property string title
-        property string hint
+    component Hint: QQC2.Label {
         Layout.fillWidth: true
-        implicitHeight: col.implicitHeight + 40
-        radius: 22
-        color: Qt.rgba(1, 1, 1, 0.06)
-        border.color: Qt.rgba(1, 1, 1, 0.14)
-        Rectangle {
-            anchors { left: parent.left; right: parent.right; top: parent.top; margins: 1 }
-            height: 36; radius: 21
-            gradient: Gradient {
-                GradientStop { position: 0; color: Qt.rgba(1, 1, 1, 0.08) }
-                GradientStop { position: 1; color: Qt.rgba(1, 1, 1, 0) }
-            }
-        }
-        ColumnLayout {
-            id: col
-            anchors { left: parent.left; right: parent.right; top: parent.top; margins: 20 }
-            spacing: 4
-            Label { text: title; color: win.ink; font.pixelSize: 17; font.weight: Font.DemiBold }
-            Label { text: hint; color: win.subInk; font.pixelSize: 12; visible: hint !== ""; wrapMode: Text.WordWrap; Layout.fillWidth: true }
-            ColumnLayout { id: inner; Layout.fillWidth: true; Layout.topMargin: 10; spacing: 10 }
-        }
+        Layout.maximumWidth: Kirigami.Units.gridUnit * 24
+        wrapMode: Text.WordWrap
+        font: Kirigami.Theme.smallFont
+        color: Kirigami.Theme.disabledTextColor
     }
 
-    // ---------- background ----------
-    Rectangle {
-        anchors.fill: parent
-        gradient: Gradient {
-            GradientStop { position: 0; color: "#ee151526" }
-            GradientStop { position: 1; color: "#ee221b38" }
-        }
-    }
-    Repeater {    // soft accent bloom: stacked translucent discs fake a radial glow
-        model: 8
-        Rectangle {
-            required property int index
-            width: 640 - index * 70; height: width; radius: width / 2
-            x: win.width - 330 - width / 2; y: -170 - width / 2 + 120
-            color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.022)
-        }
-    }
-
-    ScrollView {
+    QQC2.ScrollView {
         anchors.fill: parent
         contentWidth: availableWidth
-        ColumnLayout {
-            width: parent.width
-            spacing: 16
 
+        Kirigami.FormLayout {
+            width: parent.width
+            wideMode: width > Kirigami.Units.gridUnit * 30
+
+            // ---------------- Wallpaper ----------------
+            Kirigami.Separator { Kirigami.FormData.isSection: true; Kirigami.FormData.label: "Wallpaper" }
             RowLayout {
-                Layout.margins: 28
-                Layout.bottomMargin: 4
-                spacing: 16
-                Image { source: "file:///usr/share/icons/hicolor/128x128/apps/vitrea-logo.png"; Layout.preferredWidth: 58; Layout.preferredHeight: 58; smooth: true }
-                ColumnLayout {
-                    spacing: 2
-                    Label { text: "Vitrea Style"; color: win.ink; font.pixelSize: 30; font.weight: Font.DemiBold }
-                    Label { text: "Make it yours. Every change applies instantly."; color: win.subInk; font.pixelSize: 14 }
+                Kirigami.FormData.label: "Photo:"
+                spacing: Kirigami.Units.largeSpacing
+                property string current: backend.wallpaper
+                id: walls
+                Repeater {
+                    model: [
+                        { id: "lake", name: "Lake", dir: "summer_1am" },
+                        { id: "mist", name: "Mist", dir: "DarkestHour" },
+                        { id: "forest", name: "Forest", dir: "Path" },
+                        { id: "ember", name: "Ember", dir: "FallenLeaf" }
+                    ]
+                    ColumnLayout {
+                        required property var modelData
+                        spacing: Kirigami.Units.smallSpacing
+                        Rectangle {
+                            implicitWidth: 120; implicitHeight: 75
+                            radius: Kirigami.Units.cornerRadius + 2
+                            color: "transparent"
+                            border.width: walls.current === modelData.id ? 3 : 0
+                            border.color: Kirigami.Theme.highlightColor
+                            Image {
+                                anchors.fill: parent
+                                anchors.margins: 4
+                                source: "file:///usr/share/wallpapers/" + modelData.dir + "/contents/screenshot.jpg"
+                                sourceSize: Qt.size(240, 150)
+                                fillMode: Image.PreserveAspectCrop
+                                asynchronous: true
+                            }
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: { walls.current = modelData.id; backend.setWallpaper(modelData.id) }
+                            }
+                        }
+                        QQC2.Label { Layout.alignment: Qt.AlignHCenter; text: modelData.name }
+                    }
+                }
+            }
+            Hint { text: "Photos from KDE's wallpaper collection. The lock screen uses the same one." }
+
+            // ---------------- Colours ----------------
+            Kirigami.Separator { Kirigami.FormData.isSection: true; Kirigami.FormData.label: "Colours" }
+            RowLayout {
+                Kirigami.FormData.label: "Mode:"
+                QQC2.RadioButton { text: "Dark"; checked: backend.dark; onToggled: if (checked) backend.setDark(true) }
+                QQC2.RadioButton { text: "Light"; checked: !backend.dark; onToggled: if (checked) backend.setDark(false) }
+            }
+            QQC2.RadioButton {
+                id: accentAuto
+                Kirigami.FormData.label: "Accent colour:"
+                text: "Match the wallpaper"
+                checked: backend.accentAuto
+                onToggled: if (checked) backend.setAccentAuto()
+            }
+            RowLayout {
+                spacing: Kirigami.Units.smallSpacing
+                QQC2.RadioButton { id: accentPick; text: "Choose:"; checked: !backend.accentAuto }
+                Repeater {
+                    model: ["#3daee9", "#7f6fc4", "#c25b78", "#3a9a6c", "#c8862f", "#6d7b8a"]
+                    Rectangle {
+                        required property string modelData
+                        width: Kirigami.Units.gridUnit * 1.3; height: width; radius: width / 2
+                        color: modelData
+                        border.width: swatch.containsMouse ? 2 : 0
+                        border.color: Kirigami.Theme.textColor
+                        MouseArea {
+                            id: swatch
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: { accentPick.checked = true; backend.setAccent(parent.modelData) }
+                        }
+                    }
                 }
             }
 
-            ColumnLayout {
-                Layout.leftMargin: 28; Layout.rightMargin: 28; Layout.bottomMargin: 28
-                spacing: 16
+            // ---------------- Top bar and dock ----------------
+            Kirigami.Separator { Kirigami.FormData.isSection: true; Kirigami.FormData.label: "Top bar and dock" }
+            Choice {
+                Kirigami.FormData.label: "Transparency:"
+                model: [{ text: "More see-through", value: "more" }, { text: "Normal", value: "normal" },
+                        { text: "Less see-through", value: "less" }]
+                current: backend.transparency
+                onChosen: value => backend.setTransparency(value)
+            }
+            Choice {
+                Kirigami.FormData.label: "Glass effect:"
+                model: [{ text: "Automatic", value: "auto" }, { text: "Always on", value: "on" }, { text: "Off", value: "off" }]
+                current: backend.glassMode
+                onChosen: value => backend.setGlassMode(value)
+            }
+            Hint { text: "Automatic turns the glass effect off on computers without graphics acceleration (like most virtual machines). Menus and pop-ups are always solid." }
 
-                Card {
-                    title: "Look"
-                    hint: "A wallpaper and a matching accent colour."
-                    RowLayout {
-                        spacing: 12
-                        Repeater {
-                            model: [{ id: "lake", name: "Lake", accent: "#b4a7f5" },
-                                    { id: "mist", name: "Mist", accent: "#89b4fa" },
-                                    { id: "forest", name: "Forest", accent: "#a6e3a1" },
-                                    { id: "ember", name: "Ember", accent: "#fab387" }]
-                            GlassPill {
-                                required property var modelData
-                                text: modelData.name
-                                selected: lookGroup.current === modelData.id
-                                onClicked: { lookGroup.current = modelData.id; win.accent = modelData.accent; backend.setPreset(modelData.id) }
-                            }
-                        }
-                        QtObject { id: lookGroup; property string current: "" }
-                    }
-                }
+            // ---------------- Motion ----------------
+            Kirigami.Separator { Kirigami.FormData.isSection: true; Kirigami.FormData.label: "Motion" }
+            Choice {
+                Kirigami.FormData.label: "Animation speed:"
+                model: [{ text: "Fast", value: "fast" }, { text: "Normal", value: "normal" }, { text: "Slow", value: "slow" }]
+                current: backend.speed
+                onChosen: value => backend.setSpeed(value)
+            }
+            Choice {
+                Kirigami.FormData.label: "Minimise effect:"
+                model: [{ text: "Squash", value: "squash" }, { text: "Magic lamp", value: "lamp" }]
+                current: backend.magicLamp ? "lamp" : "squash"
+                onChosen: value => backend.setMagicLamp(value === "lamp")
+            }
+            QQC2.CheckBox {
+                text: "Wobbly windows when moved"
+                checked: backend.wobbly
+                onToggled: backend.setWobbly(checked)
+            }
 
-                Card {
-                    title: "Accent colour"
-                    hint: "Highlights, selections and the glow of the glass."
-                    RowLayout {
-                        spacing: 14
-                        Repeater {
-                            model: ["#cba6f7", "#89b4fa", "#f5a3b8", "#22d3ee", "#a6e3a1", "#fab387"]
-                            Item {
-                                required property string modelData
-                                width: 40; height: 40
-                                scale: sw.containsMouse ? 1.14 : 1
-                                Behavior on scale { SpringAnimation { spring: 5; damping: 0.3; epsilon: 0.001 } }
-                                Rectangle { anchors.fill: parent; anchors.margins: -5; radius: 25; color: "transparent"; border.width: 2; border.color: win.accent == Qt.color(modelData) ? "#ffffff" : "transparent" }
-                                Rectangle { anchors.fill: parent; radius: 20; color: modelData; border.color: Qt.rgba(1, 1, 1, 0.5) }
-                                Rectangle { x: 6; y: 4; width: 28; height: 14; radius: 7; color: Qt.rgba(1, 1, 1, 0.35) }
-                                MouseArea { id: sw; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
-                                    onClicked: { win.accent = modelData; backend.setAccent(modelData) } }
-                            }
-                        }
-                    }
-                }
+            // ---------------- Desktop ----------------
+            Kirigami.Separator { Kirigami.FormData.isSection: true; Kirigami.FormData.label: "Desktop" }
+            Choice {
+                Kirigami.FormData.label: "Dock position:"
+                model: [{ text: "Bottom", value: "bottom" }, { text: "Left", value: "left" }, { text: "Right", value: "right" }]
+                current: "bottom"
+                onChosen: value => backend.setDock(value)
+            }
+            QQC2.CheckBox {
+                Kirigami.FormData.label: "On the desktop:"
+                text: "Large clock"
+                checked: win.shown.indexOf("org.vitrea.clock") >= 0
+                onToggled: backend.setWidget("org.vitrea.clock", checked)
+            }
+            QQC2.CheckBox {
+                text: "Now Playing card (shows while music plays)"
+                checked: win.shown.indexOf("org.vitrea.music") >= 0
+                onToggled: backend.setWidget("org.vitrea.music", checked)
+            }
+            QQC2.CheckBox {
+                text: "Yumeka"
+                checked: win.shown.indexOf("org.vitrea.yumeka") >= 0
+                onToggled: backend.setWidget("org.vitrea.yumeka", checked)
+            }
 
-                Card {
-                    title: "Liquid Glass"
-                    hint: "How see-through the bar, dock and menus are, and how much they bend the light behind them."
-                    RowLayout {
-                        spacing: 12
-                        Repeater {
-                            model: [{ id: "clear", name: "Clear" }, { id: "liquid", name: "Liquid" }, { id: "frosted", name: "Frosted" }]
-                            GlassPill {
-                                required property var modelData
-                                text: modelData.name
-                                selected: glassGroup.current === modelData.id
-                                onClicked: { glassGroup.current = modelData.id; backend.setGlass(modelData.id) }
-                            }
-                        }
-                        QtObject { id: glassGroup; property string current: backend.glass }
-                    }
-                    RowLayout {
-                        spacing: 14
-                        Label { text: "Refraction"; color: win.ink; font.pixelSize: 14 }
-                        Slider {
-                            id: refr
-                            Layout.fillWidth: true
-                            from: 0; to: 20; stepSize: 1
-                            value: backend.refraction
-                            onPressedChanged: if (!pressed) backend.setRefraction(value)
-                        }
-                        Label { text: Math.round(refr.value); color: win.subInk; font.pixelSize: 13; Layout.preferredWidth: 22 }
-                    }
-                    RowLayout {
-                        spacing: 12
-                        Label { text: "Glass effect"; color: win.ink; font.pixelSize: 14; Layout.preferredWidth: 110 }
-                        Repeater {
-                            model: [{ id: "auto", name: "Automatic" }, { id: "on", name: "Always on" }, { id: "off", name: "Off" }]
-                            GlassPill {
-                                required property var modelData
-                                text: modelData.name
-                                selected: modeGroup.current === modelData.id
-                                onClicked: { modeGroup.current = modelData.id; backend.setGlassMode(modelData.id) }
-                            }
-                        }
-                        QtObject { id: modeGroup; property string current: backend.glassMode }
-                    }
-                    Label { text: "Automatic turns the glass off on computers without graphics acceleration (like most virtual machines), so the desktop stays smooth."
-                        color: win.subInk; font.pixelSize: 12; wrapMode: Text.WordWrap; Layout.fillWidth: true }
-                }
+            // ---------------- Keyboard ----------------
+            Kirigami.Separator { Kirigami.FormData.isSection: true; Kirigami.FormData.label: "Keyboard" }
+            QQC2.Switch {
+                Kirigami.FormData.label: "Mac-style keys:"
+                checked: backend.macKeys
+                onToggled: backend.setMacKeys(checked)
+            }
+            Hint {
+                text: "Cmd works like Ctrl: Cmd+C, Cmd+V, Cmd+Z, Cmd+Q and so on. Cmd+Space searches and Cmd+Shift+3 / 4 / 5 take a screenshot, snip an area or record (after you next log in). The Control key then works like the Windows/Super key. In the terminal, copy and paste are Cmd+Shift+C and Cmd+Shift+V."
+            }
 
-                Card {
-                    title: "Motion"
-                    hint: "Animation speed and how windows move."
-                    RowLayout {
-                        spacing: 12
-                        Repeater {
-                            model: [{ id: "snappy", name: "Snappy" }, { id: "fluid", name: "Fluid" }, { id: "relaxed", name: "Relaxed" }]
-                            GlassPill {
-                                required property var modelData
-                                text: modelData.name
-                                selected: speedGroup.current === modelData.id
-                                onClicked: { speedGroup.current = modelData.id; backend.setSpeed(modelData.id) }
-                            }
-                        }
-                        QtObject { id: speedGroup; property string current: backend.speed }
-                    }
-                    RowLayout {
-                        spacing: 12
-                        Label { text: "Minimise"; color: win.ink; font.pixelSize: 14; Layout.preferredWidth: 110 }
-                        GlassPill { text: "Squash"; selected: !lampGroup.on; onClicked: { lampGroup.on = false; backend.setMagicLamp(false) } }
-                        GlassPill { text: "Magic lamp"; selected: lampGroup.on; onClicked: { lampGroup.on = true; backend.setMagicLamp(true) } }
-                        QtObject { id: lampGroup; property bool on: backend.magicLamp }
-                    }
-                    RowLayout {
-                        spacing: 12
-                        Label { text: "Jelly windows"; color: win.ink; font.pixelSize: 14; Layout.preferredWidth: 110 }
-                        GlassPill { text: jellyGroup.on ? "On" : "Off"; selected: jellyGroup.on
-                            onClicked: { jellyGroup.on = !jellyGroup.on; backend.setJelly(jellyGroup.on) } }
-                        QtObject { id: jellyGroup; property bool on: backend.jelly }
-                    }
+            // ---------------- Mac hardware (T2 edition on a Mac) ----------------
+            Kirigami.Separator {
+                visible: backend.macHelper && backend.appleHardware
+                Kirigami.FormData.isSection: true; Kirigami.FormData.label: "Mac"
+            }
+            Choice {
+                visible: backend.macHelper && backend.hasTouchBar
+                Kirigami.FormData.label: "Touch Bar shows:"
+                model: [{ text: "Brightness, volume and media", value: "media" }, { text: "F1 to F12", value: "fkeys" }]
+                current: backend.touchBar
+                onChosen: value => backend.setTouchBar(value)
+            }
+            Hint {
+                visible: backend.macHelper && backend.hasTouchBar
+                text: "Hold Fn to see the other set."
+            }
+            Choice {
+                visible: backend.macHelper && backend.appleHardware
+                Kirigami.FormData.label: "Fans:"
+                model: [{ text: "Quiet", value: "quiet" }, { text: "Balanced", value: "balanced" },
+                        { text: "Cool (spin up early)", value: "cool" }, { text: "Full speed", value: "max" }]
+                current: backend.fanProfile
+                onChosen: value => backend.setFans(value)
+            }
+            QQC2.Label {
+                id: sensors
+                visible: backend.macHelper && backend.appleHardware && text !== ""
+                Kirigami.FormData.label: "Now:"
+                text: backend.sensors()
+                Timer {
+                    interval: 2000; repeat: true
+                    running: sensors.visible && win.active
+                    onTriggered: sensors.text = backend.sensors()
                 }
+            }
 
-                Card {
-                    title: "Layout"
-                    hint: "Where the dock sits and what lives on your desktop."
-                    RowLayout {
-                        spacing: 12
-                        Label { text: "Dock"; color: win.ink; font.pixelSize: 14; Layout.preferredWidth: 110 }
-                        Repeater {
-                            model: [{ id: "bottom", name: "Bottom" }, { id: "left", name: "Left" }, { id: "right", name: "Right" }]
-                            GlassPill {
-                                required property var modelData
-                                text: modelData.name
-                                selected: dockGroup.current === modelData.id
-                                onClicked: { dockGroup.current = modelData.id; backend.setDock(modelData.id) }
-                            }
-                        }
-                        QtObject { id: dockGroup; property string current: "bottom" }
-                    }
-                    RowLayout {
-                        spacing: 12
-                        Label { text: "Widgets"; color: win.ink; font.pixelSize: 14; Layout.preferredWidth: 110 }
-                        GlassPill { icon: "preferences-system-time"; text: "Big clock"; selected: w.clock
-                            onClicked: { w.clock = !w.clock; backend.setWidget("org.vitrea.clock", w.clock) } }
-                        GlassPill { icon: "media-playback-start"; text: "Music"; selected: w.music
-                            onClicked: { w.music = !w.music; backend.setWidget("org.vitrea.music", w.music) } }
-                        GlassPill { icon: "vitrea-logo"; text: "Yumeka"; selected: w.yumeka
-                            onClicked: { w.yumeka = !w.yumeka; backend.setWidget("org.vitrea.yumeka", w.yumeka) } }
-                        QtObject { id: w; property bool clock: true; property bool music: true; property bool yumeka: true }
-                    }
-                }
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    Item { Layout.fillWidth: true }
-                    GlassPill { icon: "preferences-system"; text: "More in System Settings"; onClicked: backend.openSettings() }
-                }
+            // ---------------- more ----------------
+            Item { Kirigami.FormData.isSection: true }
+            QQC2.Button {
+                icon.name: "preferences-system"
+                text: "All Settings…"
+                onClicked: backend.openSettings("")
             }
         }
     }

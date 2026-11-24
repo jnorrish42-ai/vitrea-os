@@ -111,7 +111,7 @@ PlasmoidItem {
                     Label {
                         Layout.fillWidth: true
                         text: root.player ? (root.player.track || "") : ""
-                        color: "#f2f4ff"; font.pixelSize: 17; font.weight: Font.DemiBold
+                        color: "#f2f2f3"; font.pixelSize: 17; font.weight: Font.DemiBold
                         elide: Text.ElideRight
                     }
                     Label {

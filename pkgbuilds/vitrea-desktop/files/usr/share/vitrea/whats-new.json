@@ -1,0 +1,18 @@
+{
+    "id": "2026-11-calm",
+    "title": "Vitrea has been updated",
+    "summary": "Real photo wallpapers, a new lock screen and a calmer look.",
+    "items": [
+        ["A calmer look", "Neutral grey colours with one accent colour taken from your wallpaper, plain window buttons, solid menus. The big desktop clock and Yumeka are now optional (Vitrea Style)."],
+        ["Real photo wallpapers", "Lake, Mist, Forest and Ember, in Vitrea Style. The lock screen uses the same photo."],
+        ["New lock and login screens", "A clock on your photo; start typing to unlock."],
+        ["Undo an update", "On computers installed with Vitrea's default disk layout, a snapshot is taken before every update. If an update breaks something, pick an earlier version from the boot menu."],
+        ["Screenshots", "Meta+Shift+S snips part of the screen; Print opens Spectacle. Pictures are saved to Pictures/Screenshots and copied to the clipboard."],
+        ["Clipboard history", "Meta+V (the Windows key + V; Control+V on a Mac keyboard) shows everything you copied recently."],
+        ["Drop-down terminal", "Press F12 anywhere."],
+        ["Your phone", "KDE Connect: install the KDE Connect app on your phone to share files, see notifications and use it as a remote."],
+        ["Night light", "The screen gets warmer in the evening (7 pm to 6:30 am). Change it in System Settings > Display > Night Light."],
+        ["On Macs", "Cmd works like Ctrl (Cmd+C, Cmd+V, Cmd+Q...), Cmd+Space searches, Cmd+Shift+4 snips. Touch Bar and fan settings are in Vitrea Style."],
+        ["Touchpad", "Swipe three fingers left or right to switch desktops; pinch four fingers to see all windows."]
+    ]
+}

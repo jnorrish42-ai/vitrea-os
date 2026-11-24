@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+<policyconfig>
+  <vendor>Vitrea OS</vendor>
+  <action id="org.vitrea.mac-settings">
+    <description>Change Touch Bar and fan settings</description>
+    <message>Changing Mac hardware settings</message>
+    <icon_name>vitrea-logo</icon_name>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/lib/vitrea/mac-settings</annotate>
+  </action>
+</policyconfig>

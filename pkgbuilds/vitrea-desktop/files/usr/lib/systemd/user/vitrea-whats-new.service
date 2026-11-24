@@ -1,0 +1,6 @@
+[Unit]
+Description=Vitrea: what's new after an update
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/vitrea/session-check --whats-new-only

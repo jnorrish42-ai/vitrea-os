@@ -1,0 +1,12 @@
+[Dialogs]
+FirstRun=false
+
+[Window]
+Height=45
+Width=70
+KeepOpen=false
+ShowTitleBar=false
+
+[Appearance]
+Skin=default
+Translucency=false

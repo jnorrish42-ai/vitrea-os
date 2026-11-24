@@ -1,0 +1,8 @@
+[Unit]
+Description=Tell the user what's new when Vitrea is updated
+
+[Path]
+PathChanged=/usr/share/vitrea/whats-new.json
+
+[Install]
+WantedBy=default.target

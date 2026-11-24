@@ -220,3 +220,10 @@ unzip
 ## (AUR deps of 43PR built locally: mpvpaper papirus-folders ttf-tabler-icons)
 # Vitrea look, apps and settings (updatable from the Vitrea repo)
 vitrea-desktop
+# undo an update (snapshots), phone, drop-down terminal, notifications
+snapper
+snap-pac
+grub-btrfs
+inotify-tools
+kdeconnect
+yakuake

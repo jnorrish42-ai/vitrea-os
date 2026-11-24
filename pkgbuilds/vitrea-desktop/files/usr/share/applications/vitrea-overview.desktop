@@ -2,7 +2,7 @@
 Type=Application
 Name=Launchpad
 Comment=See all your windows and search for apps
-Icon=vitrea-launchpad
+Icon=applications-all
 Exec=qdbus6 org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut Overview
 Categories=System;
 NoDisplay=true

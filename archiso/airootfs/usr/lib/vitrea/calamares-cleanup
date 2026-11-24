@@ -16,4 +16,7 @@ pacman-key --init && pacman-key --populate archlinux
 # Installer + live tooling are not needed anymore
 pacman -Rdd --noconfirm calamares mkinitcpio-archiso >/dev/null 2>&1 || true
 rm -rf /etc/calamares
+# btrfs installs: a snapshot before every update, listed in the boot menu ("undo an update").
+# Runs before the installer builds the initramfs and the boot menu.
+[ -x /usr/lib/vitrea/setup-snapshots ] && /usr/lib/vitrea/setup-snapshots || true
 exit 0

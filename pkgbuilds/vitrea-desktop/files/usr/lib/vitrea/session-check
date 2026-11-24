@@ -1,0 +1,133 @@
+#!/usr/bin/env python3
+"""Runs at login (and when Vitrea is updated):
+ * started from an earlier version in the boot menu?  -> offer to keep it ("undo an update")
+ * Vitrea was updated since the user last looked     -> a notification with "See what's new"
+"""
+import json, os, re, subprocess, sys
+
+WHATS_NEW = '/usr/share/vitrea/whats-new.json'
+
+
+def rd(group, key):
+    return subprocess.run(['kreadconfig6', '--file', 'vitrearc', '--group', group, '--key', key],
+                          capture_output=True, text=True).stdout.strip()
+
+
+def wr(group, key, value):
+    subprocess.run(['kwriteconfig6', '--file', 'vitrearc', '--group', group, '--key', key, value])
+
+
+def booted_snapshot():
+    try:
+        m = re.search(r'subvol="?/?@/\.snapshots/(\d+)/snapshot', open('/proc/cmdline').read())
+        return m.group(1) if m else None
+    except OSError:
+        return None
+
+
+def app():
+    from PyQt6.QtWidgets import QApplication
+    from PyQt6.QtGui import QIcon
+    a = QApplication.instance() or QApplication(sys.argv)
+    a.setApplicationName('Vitrea')
+    a.setDesktopFileName('vitrea-welcome')
+    a.setWindowIcon(QIcon.fromTheme('vitrea-logo'))
+    return a
+
+
+def offer_restore(n):
+    from PyQt6.QtWidgets import QMessageBox
+    app()
+    box = QMessageBox()
+    box.setWindowTitle('Earlier version of Vitrea')
+    box.setIcon(QMessageBox.Icon.Question)
+    box.setText('You started an earlier version of Vitrea from the boot menu.')
+    box.setInformativeText(
+        'Try it out: changes to the system are not kept while it runs this way '
+        '(your files in your Home folder are not affected either way).\n\n'
+        'If everything works, restore it to make it your normal Vitrea again. '
+        'The version you had before is kept until the next time you restore.')
+    keep = box.addButton('Restore This Version', QMessageBox.ButtonRole.AcceptRole)
+    box.addButton('Not Now', QMessageBox.ButtonRole.RejectRole)
+    box.exec()
+    if box.clickedButton() is not keep:
+        return
+    r = subprocess.run(['pkexec', '/usr/lib/vitrea/restore-snapshot', n], capture_output=True, text=True)
+    done = QMessageBox()
+    if r.returncode == 0:
+        done.setIcon(QMessageBox.Icon.Information)
+        done.setWindowTitle('Version restored')
+        done.setText('Restored. Restart now to use it.')
+        restart = done.addButton('Restart', QMessageBox.ButtonRole.AcceptRole)
+        done.addButton('Later', QMessageBox.ButtonRole.RejectRole)
+        done.exec()
+        if done.clickedButton() is restart:
+            subprocess.run(['systemctl', 'reboot'])
+    elif r.returncode != 126:          # 126: the password prompt was cancelled
+        done.setIcon(QMessageBox.Icon.Warning)
+        done.setWindowTitle('Could not restore')
+        done.setText('This version could not be restored. Nothing was changed.')
+        done.setDetailedText((r.stdout + r.stderr).strip())
+        done.exec()
+
+
+def show_whats_new(info):
+    from PyQt6.QtWidgets import QDialog, QVBoxLayout, QLabel, QScrollArea, QWidget, QDialogButtonBox
+    from PyQt6.QtCore import Qt
+    app()
+    d = QDialog()
+    d.setWindowTitle("What's new in Vitrea")
+    d.resize(560, 520)
+    lay = QVBoxLayout(d)
+    head = QLabel(f"<h2 style='margin:0'>{info['title']}</h2><p>{info.get('summary', '')}</p>")
+    head.setWordWrap(True)
+    lay.addWidget(head)
+    body = QWidget()
+    bl = QVBoxLayout(body)
+    for title, text in info.get('items', []):
+        l = QLabel(f'<b>{title}</b><br>{text}')
+        l.setWordWrap(True)
+        l.setTextFormat(Qt.TextFormat.RichText)
+        bl.addWidget(l)
+        bl.addSpacing(6)
+    bl.addStretch(1)
+    sa = QScrollArea()
+    sa.setWidgetResizable(True)
+    sa.setFrameShape(QScrollArea.Shape.NoFrame)
+    sa.setWidget(body)
+    lay.addWidget(sa, 1)
+    bb = QDialogButtonBox(QDialogButtonBox.StandardButton.Close)
+    bb.rejected.connect(d.reject)
+    lay.addWidget(bb)
+    d.exec()
+
+
+def whats_new():
+    try:
+        info = json.load(open(WHATS_NEW))
+    except (OSError, ValueError):
+        return
+    if rd('WhatsNew', 'Seen') == info['id']:
+        return
+    wr('WhatsNew', 'Seen', info['id'])
+    r = subprocess.run(['notify-send', '--app-name=Vitrea', '--icon=vitrea-logo', '--expire-time=15000',
+                        '--action=show=See What\'s New', info['title'], info.get('summary', '')],
+                       capture_output=True, text=True)
+    if r.stdout.strip() == 'show':
+        show_whats_new(info)
+
+
+def main():
+    if '--show-whats-new' in sys.argv:
+        show_whats_new(json.load(open(WHATS_NEW)))
+        return
+    if '--whats-new-only' not in sys.argv:
+        n = booted_snapshot()
+        if n:
+            offer_restore(n)
+            return
+    whats_new()
+
+
+if __name__ == '__main__':
+    main()
