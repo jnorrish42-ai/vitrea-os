@@ -3,7 +3,11 @@
 # /etc/xdg/plasma-workspace/env/vitrea-user-setup.sh). Each step runs once and is recorded in
 # ~/.config/vitrearc [Setup]; Mac-style keys are re-synced every login from [Keyboard] MacStyle.
 cfg="${XDG_CONFIG_HOME:-$HOME/.config}"
-export QT_QPA_PLATFORM=offscreen     # runs before the desktop exists; the colour tool needs a "screen"
+# This runs before the desktop exists. The KDE tools used below need a "screen" (offscreen),
+# and must not reach the session bus: a D-Bus call there could start plasmashell early, in
+# offscreen mode, leaving an invisible desktop. So: offscreen, and no session bus.
+export QT_QPA_PLATFORM=offscreen
+export DBUS_SESSION_BUS_ADDRESS=unix:path=/nonexistent
 pending() { [ "$(kreadconfig6 --file vitrearc --group Setup --key "$1")" != done ]; }
 finish() { kwriteconfig6 --file vitrearc --group Setup --key "$1" done; }
 own() { grep -s "^$2=" "$cfg/$1" | tail -1 | cut -d= -f2-; }     # the user's own value, not the default
