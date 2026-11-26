@@ -107,6 +107,14 @@ class Backend(QObject):
                      '{ s[w.type] = 1; }); }); print(Object.keys(s).join(","));')
 
     @pyqtProperty(bool, constant=True)
+    def lite(self):
+        return rd('vitrearc', 'Performance', 'Lite', 'false') == 'true'
+
+    @pyqtSlot(bool)
+    def setLite(self, on):
+        run('/usr/lib/vitrea/lite', 'on' if on else 'off')
+
+    @pyqtProperty(bool, constant=True)
     def macKeys(self):
         return rd('vitrearc', 'Keyboard', 'MacStyle', 'false') == 'true'
 

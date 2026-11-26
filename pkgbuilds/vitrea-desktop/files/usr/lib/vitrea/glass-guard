@@ -4,6 +4,12 @@
 # Runs before KWin starts (vitrea-glass-guard.service). Choice in ~/.config/vitrearc:
 #   [Glass] Mode=auto|on|off   (Vitrea Style -> Glass effect)
 mode=$(kreadconfig6 --file vitrearc --group Glass --key Mode --default auto)
+# light mode (/usr/lib/vitrea/lite): no glass and no blur at all
+if [ "$(kreadconfig6 --file vitrearc --group Performance --key Lite)" = true ]; then
+  for k in glassEnabled blurEnabled contrastEnabled; do kwriteconfig6 --file kwinrc --group Plugins --key $k false; done
+  kwriteconfig6 --file vitrearc --group Glass --key GuardOverride true
+  exit 0
+fi
 gpu=0
 for d in /sys/class/drm/card*/device/driver; do
   case "$(basename "$(readlink -f "$d")" 2>/dev/null)" in

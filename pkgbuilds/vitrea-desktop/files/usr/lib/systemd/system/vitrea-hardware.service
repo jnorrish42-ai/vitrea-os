@@ -1,0 +1,12 @@
+[Unit]
+Description=Vitrea: detect touchscreen and low-power hardware
+After=systemd-udev-trigger.service
+Before=display-manager.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/vitrea/hardware-setup
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

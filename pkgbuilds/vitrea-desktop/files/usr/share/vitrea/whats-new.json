@@ -1,8 +1,10 @@
 {
-    "id": "2026-11-calm",
+    "id": "2026-11-tablet",
     "title": "Vitrea has been updated",
     "summary": "Real photo wallpapers, a new lock screen and a calmer look.",
     "items": [
+        ["Tablets and touchscreens", "An on-screen keyboard appears when you tap a text field (also on the lock and login screens), and the screen turns when you rotate a tablet."],
+        ["Light mode", "For slower computers like the Surface Go: no glass or blur, shorter animations, lighter file search. Turns itself on for low-power computers; switch it in Vitrea Style > Performance."],
         ["A calmer look", "Neutral grey colours with one accent colour taken from your wallpaper, plain window buttons, solid menus. The big desktop clock and Yumeka are now optional (Vitrea Style)."],
         ["Real photo wallpapers", "Lake, Mist, Forest and Ember, in Vitrea Style. The lock screen uses the same photo."],
         ["New lock and login screens", "A clock on your photo; start typing to unlock."],

@@ -1,0 +1,36 @@
+#!/bin/bash
+# Vitrea light mode for the current user:  lite on|off
+# on:  no glass or blur (the bar and dock become less see-through instead), shorter animations,
+#      no wobbly windows / magic lamp, file search indexes names only (no background content
+#      indexing), the drop-down terminal is not started at login (start it from the app menu).
+# off: back to the normal Vitrea settings.
+# Turned on automatically for new users on low-power computers (/usr/lib/vitrea/hardware-setup).
+mode=$1
+w() { kwriteconfig6 --file "$1" --group "$2" --key "$3" "$4"; }
+d() { kwriteconfig6 --file "$1" --group "$2" --key "$3" --delete; }
+cfg="${XDG_CONFIG_HOME:-$HOME/.config}"
+[ -n "$WAYLAND_DISPLAY$DISPLAY" ] || export QT_QPA_PLATFORM=offscreen
+
+if [ "$mode" = on ]; then
+    w vitrearc Performance Lite true
+    w kwinrc Plugins glassEnabled false
+    w kwinrc Plugins blurEnabled false
+    w kwinrc Plugins contrastEnabled false
+    w kwinrc Plugins wobblywindowsEnabled false
+    w kwinrc Plugins magiclampEnabled false
+    w kwinrc Plugins squashEnabled true
+    w kdeglobals KDE AnimationDurationFactor 0.5
+    w baloofilerc General "only basic indexing" true
+    plasma-apply-desktoptheme vitrea-liquid-frosted >/dev/null 2>&1
+    mkdir -p "$cfg/autostart"
+    printf '[Desktop Entry]\nType=Application\nName=Yakuake\nExec=yakuake\nHidden=true\n' > "$cfg/autostart/org.kde.yakuake.desktop"
+else
+    w vitrearc Performance Lite false
+    for k in glassEnabled blurEnabled contrastEnabled; do d kwinrc Plugins $k; done
+    d kdeglobals KDE AnimationDurationFactor
+    plasma-apply-desktoptheme vitrea-liquid >/dev/null 2>&1
+    rm -f "$cfg/autostart/org.kde.yakuake.desktop"
+fi
+/usr/lib/vitrea/glass-guard
+qdbus6 org.kde.KWin /KWin reconfigure >/dev/null 2>&1 || true
+exit 0

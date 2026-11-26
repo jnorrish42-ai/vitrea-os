@@ -78,6 +78,8 @@ fi
 
 # --- what's new after updates; "undo an update" snapshots on btrfs installs ---
 systemctl --global enable vitrea-whats-new.path >/dev/null 2>&1 || true
+# touchscreen (on-screen keyboard) and low-power (light mode) detection at boot
+systemctl enable vitrea-hardware.service >/dev/null 2>&1 || true
 if [ $UPGRADE = 1 ]; then
   /usr/lib/vitrea/setup-snapshots --upgrade || true
 fi

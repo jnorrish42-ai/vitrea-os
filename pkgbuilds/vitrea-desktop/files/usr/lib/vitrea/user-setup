@@ -47,6 +47,16 @@ if pending tools-1; then
     finish tools-1
 fi
 
+# ---- this machine: touchscreen -> on-screen keyboard; low-power -> light mode (once) ----
+hw=/run/vitrea/hardware
+if grep -qs '^touch=1' $hw && [ -z "$(own kwinrc InputMethod)" ]; then
+    kwriteconfig6 --file kwinrc --group Wayland --key InputMethod /usr/share/applications/org.kde.plasma.keyboard.desktop
+fi
+if pending lite-1; then
+    grep -qs '^lite=1' $hw && /usr/lib/vitrea/lite on
+    finish lite-1
+fi
+
 # ---- Mac-style keys: Cmd acts as Ctrl (copy, paste, quit, save...), Cmd+Space search ----
 # on by default on Apple hardware running the T2 edition; switch in Vitrea Style
 if pending mac-1; then

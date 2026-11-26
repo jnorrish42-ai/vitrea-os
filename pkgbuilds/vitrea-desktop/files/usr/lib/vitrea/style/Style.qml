@@ -181,6 +181,17 @@ QQC2.ApplicationWindow {
                 onToggled: backend.setWidget("org.vitrea.yumeka", checked)
             }
 
+            // ---------------- Performance ----------------
+            Kirigami.Separator { Kirigami.FormData.isSection: true; Kirigami.FormData.label: "Performance" }
+            QQC2.Switch {
+                Kirigami.FormData.label: "Light mode:"
+                checked: backend.lite
+                onToggled: backend.setLite(checked)
+            }
+            Hint {
+                text: "For slower computers and tablets: no glass or blur, shorter animations, file search by name only, and the F12 terminal starts only when you open it. On automatically on low-power computers. Fully applies after you log out and back in."
+            }
+
             // ---------------- Keyboard ----------------
             Kirigami.Separator { Kirigami.FormData.isSection: true; Kirigami.FormData.label: "Keyboard" }
             QQC2.Switch {
