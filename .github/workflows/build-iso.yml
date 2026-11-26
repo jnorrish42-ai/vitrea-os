@@ -46,56 +46,75 @@ jobs:
           sudo chown -R "$USER" out
           cd out
           iso=$(ls *.iso | head -1)
-          sha256sum "$iso" > SHA256SUMS.txt
+          sums="SHA256SUMS-${{ inputs.edition }}.txt"
+          sha256sum "$iso" > "$sums"
           split -b 1900M -d -a 1 --numeric-suffixes=1 "$iso" "$iso.part"
           rm "$iso"
           echo "ISO=$iso" >> "$GITHUB_ENV"
-          echo "SUM=$(cut -d' ' -f1 SHA256SUMS.txt)" >> "$GITHUB_ENV"
+          echo "SUMS=$sums" >> "$GITHUB_ENV"
+          echo "SUM=$(cut -d' ' -f1 "$sums")" >> "$GITHUB_ENV"
           ls -la
 
       - name: Publish the release
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ inputs.tag }}
+          EDITION: ${{ inputs.edition }}
         run: |
-          cat > notes.md <<NOTES
-          ## Vitrea OS $TAG
-
-          - **A calmer look**: real photo wallpapers, neutral grey colours with one accent from the
-            wallpaper, plain window buttons, solid menus, new lock and login screens, a quiet boot splash
-          - **Undo an update**: installs use btrfs and save a snapshot before every update; pick an
-            earlier version from the boot menu if an update breaks something
-          - Boot menu lists other systems (Windows, Arch) and starts Vitrea after 5 seconds
-          - Macs: Cmd works like Ctrl, Touch Bar and fan settings in Vitrea Style, pinch for all windows
-          - Clipboard history (Meta+V), screenshots to Pictures/Screenshots (Meta+Shift+S), drop-down
-            terminal (F12), KDE Connect, night light, Vitrea Island in the top bar
-          - Fixes the installer on computers with lots of memory (e.g. Mac Pro, MacBook Pro)
-
-          ### Download
-          Download **both** \`.part1\` and \`.part2\` into the same folder, then join them:
-
-          **macOS / Linux:**
-          \`\`\`bash
-          cat $ISO.part1 $ISO.part2 > $ISO
-          shasum -a 256 $ISO
-          \`\`\`
-          **Windows (Command Prompt):**
-          \`\`\`
-          copy /b $ISO.part1 + $ISO.part2 $ISO
-          certutil -hashfile $ISO SHA256
-          \`\`\`
-          The checksum must be \`$SUM\`. Then write the ISO to a USB stick (KDE ISO Image Writer,
-          balenaEtcher or \`dd\`). T2 Macs: see the README's "T2 Macs" section (Secure Boot off).
-          NOTES
           R="$GITHUB_REPOSITORY"
+          # files of this edition: vitrea-os-t2-* (T2 Macs) or vitrea-os-<version>* (standard PCs)
+          mine() { if [ "$EDITION" = t2 ]; then [[ $1 == vitrea-os-t2-* ]]; else [[ $1 == vitrea-os-[0-9]* ]]; fi; }
           if gh release view "$TAG" -R "$R" >/dev/null 2>&1; then
-            # rebuild of an existing release: replace its ISO parts and notes
+            # rebuild: replace only this edition's files; the other edition stays
             gh release view "$TAG" -R "$R" --json assets -q '.assets[].name' | while read -r a; do
-              gh release delete-asset "$TAG" "$a" -R "$R" -y
+              if mine "$a" || [ "$a" = "$SUMS" ] || { [ "$a" = SHA256SUMS.txt ] && [ "$EDITION" = t2 ]; }; then
+                gh release delete-asset "$TAG" "$a" -R "$R" -y
+              fi
             done
-            gh release upload "$TAG" out/*.part1 out/*.part2 out/SHA256SUMS.txt -R "$R"
-            gh release edit "$TAG" -R "$R" --title "Vitrea OS $TAG" --notes-file notes.md --latest
+            gh release upload "$TAG" out/*.part1 out/*.part2 "out/$SUMS" -R "$R"
           else
-            gh release create "$TAG" out/*.part1 out/*.part2 out/SHA256SUMS.txt -R "$R" \
-              --title "Vitrea OS $TAG" --notes-file notes.md --latest
+            gh release create "$TAG" out/*.part1 out/*.part2 "out/$SUMS" -R "$R" --title "Vitrea OS $TAG" --notes "Vitrea OS $TAG"
           fi
+
+          # release notes, listing every edition the release now has
+          mkdir -p sums && gh release download "$TAG" -R "$R" --pattern 'SHA256SUMS*.txt' -D sums --clobber
+          # older releases have a single SHA256SUMS.txt, which was the T2 edition
+          if [ -f sums/SHA256SUMS.txt ]; then
+            [ -f sums/SHA256SUMS-t2.txt ] || mv sums/SHA256SUMS.txt sums/SHA256SUMS-t2.txt
+            rm -f sums/SHA256SUMS.txt
+          fi
+          {
+            echo "## Vitrea OS $TAG"
+            echo
+            echo "- **A calmer look**: real photo wallpapers, neutral grey colours with one accent from the wallpaper,"
+            echo "  plain window buttons, solid menus, new lock and login screens, a quiet boot splash"
+            echo "- **Undo an update**: installs use btrfs and save a snapshot before every update; pick an earlier"
+            echo "  version from the boot menu if an update breaks something"
+            echo "- **Tablets** (e.g. Surface Go 2): on-screen keyboard (also at login), auto-rotate, and a light mode"
+            echo "  that turns itself on for low-power computers"
+            echo "- Boot menu lists other systems (Windows, Arch) and starts Vitrea after 5 seconds"
+            echo "- Macs: Cmd works like Ctrl, Touch Bar and fan settings in Vitrea Style, pinch for all windows"
+            echo "- Clipboard history (Meta+V), screenshots to Pictures/Screenshots (Meta+Shift+S), drop-down terminal (F12),"
+            echo "  KDE Connect, night light, Vitrea Island in the top bar"
+            echo
+            echo "### Which one?"
+            for f in sums/SHA256SUMS-*.txt; do
+              ed=${f#sums/SHA256SUMS-}; ed=${ed%.txt}
+              iso=$(awk '{print $2}' "$f"); sum=$(awk '{print $1}' "$f")
+              if [ "$ed" = t2 ]; then echo "**Intel Macs with the T2 chip** (2018-2020 MacBook Pro/Air, Mac Pro 2019, iMac Pro, Mac mini 2018): \`$iso\`"
+              else echo "**Normal PCs, laptops and tablets** (including Microsoft Surface): \`$iso\`"; fi
+              echo "SHA-256: \`$sum\`"
+              echo
+            done
+            echo "### Download"
+            echo "Download **both** \`.part1\` and \`.part2\` of your edition into the same folder, then join them."
+            echo
+            echo "**Windows (Command Prompt):** \`copy /b NAME.iso.part1 + NAME.iso.part2 NAME.iso\`, then \`certutil -hashfile NAME.iso SHA256\`"
+            echo
+            echo "**macOS / Linux:** \`cat NAME.iso.part1 NAME.iso.part2 > NAME.iso\`, then \`shasum -a 256 NAME.iso\`"
+            echo
+            echo "The checksum must match the one above. Write the ISO to a USB stick with balenaEtcher, Rufus (DD mode)"
+            echo "or KDE ISO Image Writer. Turn Secure Boot off first (Surface: hold volume-up while pressing power;"
+            echo "T2 Macs: see the README). Start from the USB stick (Surface: hold volume-down while pressing power)."
+          } > notes.md
+          gh release edit "$TAG" -R "$R" --title "Vitrea OS $TAG" --notes-file notes.md --latest
