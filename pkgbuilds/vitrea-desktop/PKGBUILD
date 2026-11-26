@@ -9,7 +9,7 @@ url="https://github.com/jnorrish42-ai/vitrea-os"
 license=(custom)
 depends=(plasma-workspace plasma-desktop plasma-workspace-wallpapers inter-font sddm plymouth python python-pyqt6 kirigami kwin-effects-glass
          spectacle yakuake kdeconnect libnotify snapper snap-pac grub-btrfs inotify-tools
-         plasma-keyboard iio-sensor-proxy)
+         plasma-keyboard iio-sensor-proxy thermald)
 install=vitrea-desktop.install
 
 package() {

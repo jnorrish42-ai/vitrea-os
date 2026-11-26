@@ -78,6 +78,13 @@ fi
 
 # --- what's new after updates; "undo an update" snapshots on btrfs installs ---
 systemctl --global enable vitrea-whats-new.path >/dev/null 2>&1 || true
+# printing starts when something is printed (socket activation) instead of running all the time
+if systemctl is-enabled cups.service >/dev/null 2>&1; then
+  systemctl disable cups.service >/dev/null 2>&1; systemctl enable cups.socket >/dev/null 2>&1
+fi
+# thermald: Intel CPU temperature management (only starts on Intel, see its drop-in)
+systemctl enable thermald.service >/dev/null 2>&1 || true
+sysctl -q --system >/dev/null 2>&1 || true
 # touchscreen (on-screen keyboard) and low-power (light mode) detection at boot
 systemctl enable vitrea-hardware.service >/dev/null 2>&1 || true
 if [ $UPGRADE = 1 ]; then

@@ -192,6 +192,18 @@ QQC2.ApplicationWindow {
                 text: "For slower computers and tablets: no glass or blur, shorter animations, file search by name only, and the F12 terminal starts only when you open it. On automatically on low-power computers. Fully applies after you log out and back in."
             }
 
+            QQC2.Switch {
+                visible: backend.hasBattery
+                Kirigami.FormData.label: "On battery:"
+                text: "Turn off glass and blur"
+                checked: backend.liteOnBattery
+                onToggled: backend.setLiteOnBattery(checked)
+            }
+            Hint {
+                visible: backend.hasBattery
+                text: "Saves battery: the effects come back when you plug in (applies from your next login)."
+            }
+
             // ---------------- Keyboard ----------------
             Kirigami.Separator { Kirigami.FormData.isSection: true; Kirigami.FormData.label: "Keyboard" }
             QQC2.Switch {

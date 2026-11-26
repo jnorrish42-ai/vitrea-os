@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Vitrea battery saver
+Comment=Turns off the glass and blur effects while running on battery
+Exec=/usr/lib/vitrea/battery-saver
+NoDisplay=true
+X-KDE-autostart-phase=2
+OnlyShowIn=KDE;

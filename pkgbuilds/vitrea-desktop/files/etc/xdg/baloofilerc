@@ -1,0 +1,4 @@
+[General]
+# file search indexes file names only; reading every file's contents in the background
+# costs a lot of CPU and memory (turn content search on in System Settings > File Search)
+only basic indexing=true

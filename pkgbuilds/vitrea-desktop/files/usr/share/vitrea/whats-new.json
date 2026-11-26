@@ -1,8 +1,9 @@
 {
-    "id": "2026-11-tablet",
+    "id": "2026-11-lighter",
     "title": "Vitrea has been updated",
     "summary": "Real photo wallpapers, a new lock screen and a calmer look.",
     "items": [
+        ["Lighter and longer battery life", "Vitrea now uses less memory and processor time in the background: file search looks at names only, printing starts only when you print, Intel laptops manage heat better, and glass and blur switch off while on battery (Vitrea Style > Performance)."],
         ["Tablets and touchscreens", "An on-screen keyboard appears when you tap a text field (also on the lock and login screens), and the screen turns when you rotate a tablet."],
         ["Light mode", "For slower computers like the Surface Go: no glass or blur, shorter animations, lighter file search. Turns itself on for low-power computers; switch it in Vitrea Style > Performance."],
         ["A calmer look", "Neutral grey colours with one accent colour taken from your wallpaper, plain window buttons, solid menus. The big desktop clock and Yumeka are now optional (Vitrea Style)."],

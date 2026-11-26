@@ -30,7 +30,9 @@ PlasmoidItem {
         onTimerDone: if (chime.item) chime.item.play()
     }
     Timer {
-        interval: 250; running: true; repeat: true; triggeredOnStart: true
+        // fast ticks only while something on the island changes; once a second otherwise
+        interval: (logic.popup !== "" || logic.timerRunning || root.expanded) ? 250 : 1000
+        running: true; repeat: true; triggeredOnStart: true
         onTriggered: {
             root.now = new Date()
             logic.nowMs = root.now.getTime()

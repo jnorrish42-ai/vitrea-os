@@ -110,6 +110,18 @@ class Backend(QObject):
     def lite(self):
         return rd('vitrearc', 'Performance', 'Lite', 'false') == 'true'
 
+    @pyqtProperty(bool, constant=True)
+    def hasBattery(self):
+        return any(read(f) == 'Battery' for f in glob.glob('/sys/class/power_supply/*/type'))
+
+    @pyqtProperty(bool, constant=True)
+    def liteOnBattery(self):
+        return rd('vitrearc', 'Performance', 'LiteOnBattery', 'true') == 'true'
+
+    @pyqtSlot(bool)
+    def setLiteOnBattery(self, on):
+        wr('vitrearc', 'Performance', 'LiteOnBattery', 'true' if on else 'false')
+
     @pyqtSlot(bool)
     def setLite(self, on):
         run('/usr/lib/vitrea/lite', 'on' if on else 'off')

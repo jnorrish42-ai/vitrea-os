@@ -99,7 +99,6 @@ Item {
                 Rectangle { anchors.fill: parent; radius: width / 2; color: Qt.rgba(pill.accent.r, pill.accent.g, pill.accent.b, 0.35) }
                 RoundedImage { anchors.fill: parent; radius: width / 2; source: pill.art }
                 Text { anchors.centerIn: parent; text: "♪"; color: "white"; font.pixelSize: parent.height * 0.6; visible: pill.art == "" }
-                RotationAnimation on rotation { from: 0; to: 360; duration: 9000; loops: Animation.Infinite; running: pill.playing }
             }
             Text {
                 id: titleText

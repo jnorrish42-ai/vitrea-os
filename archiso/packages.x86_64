@@ -230,3 +230,4 @@ yakuake
 # tablets and touchscreens (Surface Go): on-screen keyboard, auto-rotate
 plasma-keyboard
 iio-sensor-proxy
+thermald
